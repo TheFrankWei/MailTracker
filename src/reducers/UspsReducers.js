@@ -1,31 +1,31 @@
 import {
-    GET_UPS_TRACKING_STARTED,
-    GET_UPS_TRACKING_SUCCEEDED,
-    GET_UPS_TRACKING_FAILED,
-  } from '../actions/UpsActions';
+    GET_USPS_TRACKING_STARTED,
+    GET_USPS_TRACKING_SUCCEEDED,
+    GET_USPS_TRACKING_FAILED,
+  } from '../actions/UspsActions';
 
   const defaultState = {
-   ups_tracking: [],
+   usps_tracking: [],
   };
 
-  const UpsReducer = (state = defaultState, action) => {
+  const UspsReducer = (state = defaultState, action) => {
     Object.freeze(state);
     let newState;
     switch (action.type) {
-      case  GET_UPS_TRACKING_STARTED:
+      case  GET_USPS_TRACKING_STARTED:
         newState = {
           ...state,
           isLoading: true,
         };
         return newState;
-      case GET_UPS_TRACKING_SUCCEEDED:
+      case GET_USPS_TRACKING_SUCCEEDED:
         newState = {
           ...state,
           isLoading: false,
-          ups_tracking: action.response.data,
+          usps_tracking: action.response.data,
         };
         return newState;
-      case  GET_UPS_TRACKING_FAILED:
+      case  GET_USPS_TRACKING_FAILED:
         newState = {
           ...state,
           isLoading: false,
@@ -38,4 +38,4 @@ import {
   };
   
   
-  export default UpsReducer;
+  export default UspsReducer;

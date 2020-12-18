@@ -1,5 +1,9 @@
-import React, {Fragment, useState, useRef, useEffect, useCallback} from 'react';
+import React, {useState, useEffect,} from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { makeStyles, TextField } from '@material-ui/core';
+
+//actions
+import { getUspsTracking } from '../actions/UspsActions';
 
 
 export const useStyles = makeStyles(theme => ({
@@ -11,6 +15,13 @@ export const useStyles = makeStyles(theme => ({
 
 const Home = () => {
     const classes = useStyles();
+
+    const dispatch = useDispatch();
+    const uspsTracking = useSelector(state => state.usps_tracking);
+
+    useEffect(()=>{
+      dispatch(getUspsTracking('9405509202348003831398'));
+    }, []);
 
     return (
     <div className={classes.home_container}>   

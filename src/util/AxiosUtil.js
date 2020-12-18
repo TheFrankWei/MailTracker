@@ -1,7 +1,8 @@
 import axios from 'axios';
 
+//need instance for json and xml
 const Instance = {
-  axiosInstance(contentType = 'application/json') {
+  axiosInstance(contentType = 'application/xml') {
     const instance = axios.create({
       baseURL: process.env.BASE_URL,
       timeout: 15000,
@@ -9,7 +10,7 @@ const Instance = {
     });
     return instance;
   },
-  getHeader(contentType = 'application/json') {
+  getHeader(contentType = 'application/xml') {
     const API_HEADER = {
       'Content-Type': contentType,
     };

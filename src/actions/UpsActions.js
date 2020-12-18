@@ -22,12 +22,8 @@ export const getUpsTracking = () => (dispatch) => {
     dispatch(onGetUpsTrackingStarted());
     return Instance.axiosInstance().get( /*  ups url here  */)
       .then((response) => {
-        const results = response.data.results;
-        const data = results.map(result => ({
-          label: result.name, value: result.id,
-        }));
-        dispatch(onGetUpsTrackingSucceeded(data));
-        return data;
+        dispatch(onGetUpsTrackingSucceeded(response));
+        return response.data;
       })
       .catch((error) => {
         const { response } = error;
