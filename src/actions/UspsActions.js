@@ -1,18 +1,14 @@
 import Instance from '../util/AxiosUtil';
 
 export const GET_USPS_TRACKING_STARTED = 'GET_USPS_TRACKING_STARTED';
-export const GET_USPS_TRACKING_SUCCEEDED = 'GET_USPS_TRACKISNG_SUCCEEDED';
+export const GET_USPS_TRACKING_SUCCEEDED = 'GET_USPS_TRACKING_SUCCEEDED';
 export const GET_USPS_TRACKING_FAILED = 'GET_USPS_TRACKING_FAILED';
 
-const API_KEY = process.env.USPS_API_USERNAME;
+const API_KEY = process.env.REACT_APP_USPS_API_USERNAME;
 const uspsUrl ='https://secure.shippingapis.com/shippingapi.dll?API=TrackV2&XML='
 
 const constructXML = (trackID) => {
-  return( `
-  <TrackRequest USERID="${API_KEY}">
-    <TrackID ID="${trackID}"/>  
-  </TrackRequest>
-  `)}
+  return(`<TrackRequest USERID="${API_KEY}"><TrackID ID="${trackID}"/></TrackRequest>`)}
 
 const onGetUspsTrackingStarted = () => ({
   type: GET_USPS_TRACKING_STARTED,

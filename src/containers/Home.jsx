@@ -27,8 +27,8 @@ const Home = () => {
 
     const findTracking = () => {
       //parse and determine what company tracking to use here
-      dispatch(getUspsTracking(textInput));
-      // dispatch(getUspsTracking('9405509202348003831398'));
+      // dispatch(getUspsTracking(textInput));
+      dispatch(getUspsTracking('9405509202348003831398'));
     };
 
     return (
