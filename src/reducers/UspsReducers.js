@@ -4,6 +4,8 @@ import {
     GET_USPS_TRACKING_FAILED,
   } from '../actions/UspsActions';
 
+import {parseString} from 'xml2js';
+
   const defaultState = {
    usps_tracking: [],
   };
@@ -19,10 +21,19 @@ import {
         };
         return newState;
       case GET_USPS_TRACKING_SUCCEEDED:
+        let jsonFromXML;
+        parseString(action.response.data, (err, result) => {
+          if(err) {
+              throw err;
+          }
+          // `result` is a JavaScript object
+          // convert it to a JSON string
+          jsonFromXML = JSON.stringify(result, null, 4);
+        });
         newState = {
           ...state,
           isLoading: false,
-          usps_tracking: action.response.data,
+          usps_tracking: jsonFromXML,
         };
         return newState;
       case  GET_USPS_TRACKING_FAILED:
