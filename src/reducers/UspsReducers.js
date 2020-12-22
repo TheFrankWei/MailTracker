@@ -28,7 +28,8 @@ import {parseString} from 'xml2js';
           }
           // `result` is a JavaScript object
           // convert it to a JSON string
-          jsonFromXML = JSON.stringify(result, null, 4);
+          let jsonString = JSON.stringify(result, null, 4);
+          jsonFromXML = JSON.parse(jsonString)
         });
         newState = {
           ...state,

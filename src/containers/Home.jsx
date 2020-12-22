@@ -1,6 +1,15 @@
 import React, {useState, useEffect,} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { makeStyles, TextField, Button } from '@material-ui/core';
+import {makeStyles, 
+        TextField, 
+        Button, 
+        Table, 
+        TableContainer, 
+        TableHead, 
+        TableRow, 
+        TableCell, 
+        TableBody, 
+        Paper, } from '@material-ui/core';
 
 //actions
 import { getUspsTracking } from '../actions/UspsActions';
@@ -47,9 +56,20 @@ const Home = () => {
             Track Package!
           </Button>
         </form>
-        
 
-        {/*display tracking info here */}
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Tracking Number</TableCell>
+                <TableCell> Tracking Summary</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+               {/*display tracking info here */}
+            </TableBody>
+          </Table>
+        </TableContainer>
     </div>
     );
 };
