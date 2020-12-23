@@ -34,7 +34,7 @@ import {parseString} from 'xml2js';
         newState = {
           ...state,
           isLoading: false,
-          usps_tracking: jsonFromXML,
+          usps_tracking: [...state.usps_tracking, jsonFromXML.TrackResponse.TrackInfo[0]], //append new tracking to redux
         };
         return newState;
       case  GET_USPS_TRACKING_FAILED:
