@@ -55,7 +55,7 @@ const Home = () => {
 
     //didUpdate
     useEffect(()=>{
-      if(!isEmpty(uspsLastAdded)){ //should probably be prevprops.uspslast added is diff from current
+      if(!isEmpty(uspsLastAdded)){ //should probably be prevprops.uspslastadded is diff from current -- is prevProps even necessary if there is error handling in findTracking?
         setTrackingNumbers([...trackingNumbers,
                                 { 
                                   carrier: 'usps',
