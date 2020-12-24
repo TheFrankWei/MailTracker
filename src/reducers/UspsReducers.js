@@ -7,7 +7,8 @@ import {
 import {parseString} from 'xml2js';
 
   const defaultState = {
-   usps_tracking: [],
+   uspsTracking: [],
+   uspsLastAdded: {},
   };
 
   const UspsReducer = (state = defaultState, action) => {
@@ -34,7 +35,8 @@ import {parseString} from 'xml2js';
         newState = {
           ...state,
           isLoading: false,
-          usps_tracking: [...state.usps_tracking, jsonFromXML.TrackResponse.TrackInfo[0]], //append new tracking to redux
+          uspsTracking: [...state.uspsTracking, jsonFromXML.TrackResponse.TrackInfo[0]], //append new tracking to redux
+          uspsLastAdded: jsonFromXML.TrackResponse.TrackInfo[0],
         };
         return newState;
       case  GET_USPS_TRACKING_FAILED:

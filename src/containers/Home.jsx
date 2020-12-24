@@ -1,5 +1,7 @@
-import React, {useState, useEffect,} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { isEmpty } from 'lodash';
+
 import {makeStyles, 
         TextField, 
         Button, 
@@ -22,22 +24,58 @@ export const useStyles = makeStyles(theme => ({
   }
 }));
 
+const usePrevious = (value) => {
+  const ref = useRef();
+
+  // Store current value in ref
+  useEffect(() => {
+    ref.current = value;
+  }, [value]); // Only re-run if value changes
+  
+  // Return previous value (happens before update in useEffect above)
+  return ref.current;
+}
+
 const Home = () => {
     const classes = useStyles();
 
     const dispatch = useDispatch();
-    const uspsTracking = useSelector(state => state.usps_tracking);
+    const uspsTracking = useSelector(state => state.uspsReducers.uspsTracking);
+    const uspsLastAdded = useSelector(state => state.uspsReducers.uspsLastAdded);
     
-    const [textInput, setTextInput] = useState('')
+    const [textInput, setTextInput] = useState('');
+    const [trackingNumbers, setTrackingNumbers] = useState([]);
 
+    const prevTextInput = usePrevious(textInput);
+
+    //didMount
     useEffect(()=>{
-      // dispatch(getUspsTracking('9405509202348003831398'));
+      // didMount pull saved tracking numbers from future backend
     }, []);
+
+    //didUpdate
+    useEffect(()=>{
+      if(!isEmpty(uspsLastAdded)){ //should probably be prevprops.uspslast added is diff from current
+        setTrackingNumbers([...trackingNumbers,
+                                { 
+                                  carrier: 'usps',
+                                  id: uspsLastAdded.$.ID, 
+                                  trackingSummary: uspsLastAdded.TrackSummary[0],
+                                }
+                            ])
+      }
+    }, [uspsLastAdded]);
 
     const findTracking = () => {
       //parse and determine what company tracking to use here
-      // dispatch(getUspsTracking(textInput));
-      dispatch(getUspsTracking('9405509202348003831398'));
+      if(textInput === ''){
+        //error handling
+      } else if(textInput === prevTextInput){
+        //error handling, duplicate entry -- should probably change to search entire state for entered values
+      } else {
+        dispatch(getUspsTracking(textInput));
+        // dispatch(getUspsTracking('9405509202348003831398'));
+      }
     };
 
     return (
@@ -61,12 +99,22 @@ const Home = () => {
           <Table>
             <TableHead>
               <TableRow>
+              <TableCell>Carrier</TableCell>
                 <TableCell>Tracking Number</TableCell>
                 <TableCell> Tracking Summary</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-               {/*display tracking info here */}
+                {/* {uspsTracking.length > 0? <TableCell>{uspsTracking[0].$.ID}</TableCell> : <TableCell></TableCell>} */}
+                {/* {uspsTracking.length > 0? <TableCell>{uspsTracking[0].TrackSummary[0]}</TableCell> : <TableCell></TableCell>} */}
+                {trackingNumbers.map((row) => (
+                  <TableRow>
+                    <TableCell>{row.carrier}</TableCell>
+                    <TableCell>{row.id}</TableCell>
+                    <TableCell>{row.trackingSummary}</TableCell>
+                  </TableRow>
+             
+                ))}
             </TableBody>
           </Table>
         </TableContainer>
