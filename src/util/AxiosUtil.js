@@ -12,6 +12,7 @@ const Instance = {
   getHeader(contentType = 'application/json') {
     const API_HEADER = {
       'Content-Type': contentType,
+      // 'DHL-API-Key': process.env.REACT_APP_DHL_API_USERNAME,
     };
     return API_HEADER;
   },

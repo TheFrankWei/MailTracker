@@ -5,7 +5,8 @@ import {
   } from '../actions/UpsActions';
 
   const defaultState = {
-   ups_tracking: [],
+   upsTracking: [],
+   upsLastAdded: {},
   };
 
   const UpsReducer = (state = defaultState, action) => {
@@ -22,7 +23,8 @@ import {
         newState = {
           ...state,
           isLoading: false,
-          ups_tracking: action.response.data,
+          upsTracking: [...state.upsTracking, action.response.data],
+          upsLastAdded: action.response.data,
         };
         return newState;
       case  GET_UPS_TRACKING_FAILED:
