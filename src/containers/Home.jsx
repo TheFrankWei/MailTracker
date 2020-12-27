@@ -14,6 +14,7 @@ import {makeStyles,
         Paper, } from '@material-ui/core';
 
 //actions
+import { getUpsTracking } from '../actions/UpsActions';
 import { getUspsTracking } from '../actions/UspsActions';
 
 
@@ -42,7 +43,10 @@ const Home = () => {
     const dispatch = useDispatch();
     const uspsTracking = useSelector(state => state.uspsReducers.uspsTracking);
     const uspsLastAdded = useSelector(state => state.uspsReducers.uspsLastAdded);
-    
+
+    const upsTracking = useSelector(state => state.upsReducers.upsTracking);
+    const upsLastAdded = useSelector(state => state.upsReducers.upsLastAdded);
+
     const [textInput, setTextInput] = useState('');
     const [trackingNumbers, setTrackingNumbers] = useState([]);
 
@@ -55,6 +59,17 @@ const Home = () => {
 
     //didUpdate
     useEffect(()=>{
+      if(!isEmpty(upsLastAdded)){
+        setTrackingNumbers([...trackingNumbers,
+                              {
+                                carrier: 'ups',
+                                id: upsLastAdded.trackResponse.shipment[0].package[0].trackingNumber,
+                                trackingSummary: `${upsLastAdded.trackResponse.shipment[0].package[0].activity[0].status.description + ' at ' +
+                                upsLastAdded.trackResponse.shipment[0].package[0].activity[0].location.address.city +  ', ' + 
+                                upsLastAdded.trackResponse.shipment[0].package[0].activity[0].location.address.stateProvince}`,
+                              }
+                            ])
+      }
       if(!isEmpty(uspsLastAdded)){ //should probably be prevprops.uspslastadded is diff from current -- is prevProps even necessary if there is error handling in findTracking?
         setTrackingNumbers([...trackingNumbers,
                                 { 
@@ -64,7 +79,7 @@ const Home = () => {
                                 }
                             ])
       }
-    }, [uspsLastAdded]);
+    }, [upsLastAdded, uspsLastAdded]);
 
     const findTracking = () => {
       //parse and determine what company tracking to use here
@@ -73,7 +88,9 @@ const Home = () => {
       } else if(textInput === prevTextInput){
         //error handling, duplicate entry -- should probably change to search entire state for entered values
       } else {
-        dispatch(getUspsTracking(textInput));
+        dispatch(getUpsTracking(textInput));
+        //1Z5338FF0107231059
+        // dispatch(getUspsTracking(textInput));
         // dispatch(getUspsTracking('9405509202348003831398'));
       }
     };
