@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useRef} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { isEmpty } from 'lodash';
+import { forEach, isEmpty } from 'lodash';
 
 import {makeStyles, 
         TextField, 
@@ -17,6 +17,20 @@ import {makeStyles,
 import { getUpsTracking } from '../actions/UpsActions';
 import { getUspsTracking } from '../actions/UspsActions';
 
+let ups_regex_pattern=[
+  '^(1Z)[0-9A-Z]{16}$',
+  '^(T)+[0-9A-Z]{10}$',
+  '^[0-9]{9}$',
+  '^[0-9]{26}$'
+];
+
+let usps_regex_pattern=[
+  '^(94|93|92|94|95)[0-9]{20}$',
+  '^(94|93|92|94|95)[0-9]{22}$',
+  '^(70|14|23|03)[0-9]{14}$',
+  '^(M0|82)[0-9]{8}$',
+  '^([A-Z]{2})[0-9]{9}([A-Z]{2})$'
+];
 
 export const useStyles = makeStyles(theme => ({
   home_container: {
@@ -49,7 +63,7 @@ const Home = () => {
 
     const [textInput, setTextInput] = useState('');
     const [trackingNumbers, setTrackingNumbers] = useState([]);
-
+    const [lastAddedCarrier, setLastAddedCarrier] = useState('');
     const prevTextInput = usePrevious(textInput);
 
     //didMount
@@ -58,26 +72,49 @@ const Home = () => {
     }, []);
 
     //didUpdate
+    // useEffect(()=>{
+    //   if(!isEmpty(upsLastAdded)){
+    //     setTrackingNumbers([...trackingNumbers,
+    //                           {
+    //                             carrier: upsLastAdded.carrier,
+    //                             id: upsLastAdded.id,
+    //                             trackingSummary: upsLastAdded.trackingSummary,
+    //                           }
+    //                         ])
+    //   }
+    //   if(!isEmpty(uspsLastAdded)){ //should probably be prevprops.uspslastadded is diff from current -- is prevProps even necessary if there is error handling in findTracking?
+    //     setTrackingNumbers([...trackingNumbers,
+    //                             { 
+    //                               carrier: uspsLastAdded.carrier,
+    //                               id: uspsLastAdded.id, 
+    //                               trackingSummary: uspsLastAdded.trackingSummary,
+    //                             }
+    //                         ])
+    //   }
+    // }, [upsLastAdded, uspsLastAdded]);
+
     useEffect(()=>{
-      if(!isEmpty(upsLastAdded)){
-        setTrackingNumbers([...trackingNumbers,
-                              {
-                                carrier: 'ups',
-                                id: upsLastAdded.trackResponse.shipment[0].package[0].trackingNumber,
-                                trackingSummary: `${upsLastAdded.trackResponse.shipment[0].package[0].activity[0].status.description + ' at ' +
-                                upsLastAdded.trackResponse.shipment[0].package[0].activity[0].location.address.city +  ', ' + 
-                                upsLastAdded.trackResponse.shipment[0].package[0].activity[0].location.address.stateProvince}`,
-                              }
-                            ])
+      let lastAddedTrackingNumber;
+      switch(lastAddedCarrier){ //put this in prevprops? on state update, followed by setTrackingNumbers() if that state 
+        case 'ups':
+         lastAddedTrackingNumber = { 
+                                    carrier: upsLastAdded.carrier,
+                                    id: upsLastAdded.id,
+                                    trackingSummary: upsLastAdded.trackingSummary,
+                                   }
+          break;
+        case 'usps':
+          lastAddedTrackingNumber ={ 
+            carrier: uspsLastAdded.carrier,
+            id: uspsLastAdded.id,
+            trackingSummary: uspsLastAdded.trackingSummary,
+          }
+          break;
+        default:
+          break;
       }
-      if(!isEmpty(uspsLastAdded)){ //should probably be prevprops.uspslastadded is diff from current -- is prevProps even necessary if there is error handling in findTracking?
-        setTrackingNumbers([...trackingNumbers,
-                                { 
-                                  carrier: 'usps',
-                                  id: uspsLastAdded.$.ID, 
-                                  trackingSummary: uspsLastAdded.TrackSummary[0],
-                                }
-                            ])
+      if(lastAddedTrackingNumber){
+        setTrackingNumbers([lastAddedTrackingNumber, ...trackingNumbers]);
       }
     }, [upsLastAdded, uspsLastAdded]);
 
@@ -88,16 +125,33 @@ const Home = () => {
       } else if(textInput === prevTextInput){
         //error handling, duplicate entry -- should probably change to search entire state for entered values
       } else {
-        dispatch(getUpsTracking(textInput));
+        // dispatch(getUpsTracking(textInput));
         //1Z5338FF0107231059
+        //1Z75AR481395060710
         // dispatch(getUspsTracking(textInput));
         // dispatch(getUspsTracking('9405509202348003831398'));
+
+        for(let i = 0; i< ups_regex_pattern.length-1; i++){
+          let regex = new RegExp(ups_regex_pattern[i]);
+          if(regex.test(textInput)){
+            setLastAddedCarrier('ups');
+            dispatch(getUpsTracking(textInput));
+          }
+        }
+
+        for(let i = 0; i< usps_regex_pattern.length-1; i++){
+          let regex = new RegExp(usps_regex_pattern[i]);
+          if(regex.test(textInput)){
+            setLastAddedCarrier('usps');
+            dispatch(getUspsTracking(textInput));
+          }
+        }
       }
     };
 
     return (
     <div className={classes.home_container}>   
-        <h1>MailTracker</h1>
+        <h1>MailTracker</h1> 
         <form>
           <TextField 
             variant="outlined" 

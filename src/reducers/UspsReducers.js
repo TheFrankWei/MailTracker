@@ -23,6 +23,7 @@ import {parseString} from 'xml2js';
         return newState;
       case GET_USPS_TRACKING_SUCCEEDED:
         let jsonFromXML;
+        let currentTracking;
         parseString(action.response.data, (err, result) => {
           if(err) {
               throw err;
@@ -30,13 +31,19 @@ import {parseString} from 'xml2js';
           // `result` is a JavaScript object
           // convert it to a JSON string
           let jsonString = JSON.stringify(result, null, 4);
-          jsonFromXML = JSON.parse(jsonString)
+          jsonFromXML = JSON.parse(jsonString);
+          
+          currentTracking = {
+            carrier: 'usps',
+            id:  jsonFromXML.TrackResponse.TrackInfo[0].$.ID,
+            trackingSummary: jsonFromXML.TrackResponse.TrackInfo[0].TrackSummary[0],
+          };
         });
         newState = {
           ...state,
           isLoading: false,
-          uspsTracking: [...state.uspsTracking, jsonFromXML.TrackResponse.TrackInfo[0]], //append new tracking to redux
-          uspsLastAdded: jsonFromXML.TrackResponse.TrackInfo[0],
+          uspsTracking: [...state.uspsTracking, currentTracking], //append new tracking to redux
+          uspsLastAdded: currentTracking,
         };
         return newState;
       case  GET_USPS_TRACKING_FAILED:
