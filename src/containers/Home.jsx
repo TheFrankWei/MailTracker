@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useRef} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { forEach, isEmpty } from 'lodash';
+import { isEmpty } from 'lodash';
 
 import {makeStyles, 
         TextField, 
@@ -13,9 +13,12 @@ import {makeStyles,
         TableBody, 
         Paper, } from '@material-ui/core';
 
+import Snackbar from '../components/Snackbar';
+
 //actions
 import { getUpsTracking } from '../actions/UpsActions';
 import { getUspsTracking } from '../actions/UspsActions';
+import { showInfoSnackbar, showErrorSnackbar } from '../actions/SnackbarActions';
 
 let ups_regex_pattern=[
   '^(1Z)[0-9A-Z]{16}$',
@@ -62,7 +65,7 @@ const Home = () => {
     const upsLastAdded = useSelector(state => state.upsReducers.upsLastAdded);
 
     const [textInput, setTextInput] = useState('');
-    const [trackingNumbers, setTrackingNumbers] = useState([]);
+    const [trackingNumberList, setTrackingNumberList] = useState([]);
     const [lastAddedCarrier, setLastAddedCarrier] = useState('');
     const prevTextInput = usePrevious(textInput);
 
@@ -71,59 +74,40 @@ const Home = () => {
       // didMount pull saved tracking numbers from future backend
     }, []);
 
-    //didUpdate
-    // useEffect(()=>{
-    //   if(!isEmpty(upsLastAdded)){
-    //     setTrackingNumbers([...trackingNumbers,
-    //                           {
-    //                             carrier: upsLastAdded.carrier,
-    //                             id: upsLastAdded.id,
-    //                             trackingSummary: upsLastAdded.trackingSummary,
-    //                           }
-    //                         ])
-    //   }
-    //   if(!isEmpty(uspsLastAdded)){ //should probably be prevprops.uspslastadded is diff from current -- is prevProps even necessary if there is error handling in findTracking?
-    //     setTrackingNumbers([...trackingNumbers,
-    //                             { 
-    //                               carrier: uspsLastAdded.carrier,
-    //                               id: uspsLastAdded.id, 
-    //                               trackingSummary: uspsLastAdded.trackingSummary,
-    //                             }
-    //                         ])
-    //   }
-    // }, [upsLastAdded, uspsLastAdded]);
 
+    //didUpdate
     useEffect(()=>{
-      let lastAddedTrackingNumber;
+      let lastAddedTrackingNumber; //const or let
       switch(lastAddedCarrier){ //put this in prevprops? on state update, followed by setTrackingNumbers() if that state 
-        case 'ups':
-         lastAddedTrackingNumber = { 
+        case 'UPS':
+          lastAddedTrackingNumber={ 
                                     carrier: upsLastAdded.carrier,
                                     id: upsLastAdded.id,
                                     trackingSummary: upsLastAdded.trackingSummary,
-                                   }
+                                  }
           break;
-        case 'usps':
-          lastAddedTrackingNumber ={ 
-            carrier: uspsLastAdded.carrier,
-            id: uspsLastAdded.id,
-            trackingSummary: uspsLastAdded.trackingSummary,
-          }
+        case 'USPS':
+          lastAddedTrackingNumber={ 
+                                    carrier: uspsLastAdded.carrier,
+                                    id: uspsLastAdded.id,
+                                    trackingSummary: uspsLastAdded.trackingSummary,
+                                  }
           break;
         default:
           break;
       }
       if(lastAddedTrackingNumber){
-        setTrackingNumbers([lastAddedTrackingNumber, ...trackingNumbers]);
+        setTrackingNumberList([lastAddedTrackingNumber, ...trackingNumberList]);
       }
-    }, [upsLastAdded, uspsLastAdded]);
+    }, [upsLastAdded, uspsLastAdded]); 
 
     const findTracking = () => {
-      //parse and determine what company tracking to use here
       if(textInput === ''){
         //error handling
+        dispatch(showErrorSnackbar('No Tracking Found.'));
       } else if(textInput === prevTextInput){
         //error handling, duplicate entry -- should probably change to search entire state for entered values
+        dispatch(showErrorSnackbar('Youve already entered this number! Please enter a new tracking number.'));
       } else {
         // dispatch(getUpsTracking(textInput));
         //1Z5338FF0107231059
@@ -131,21 +115,40 @@ const Home = () => {
         // dispatch(getUspsTracking(textInput));
         // dispatch(getUspsTracking('9405509202348003831398'));
 
-        for(let i = 0; i< ups_regex_pattern.length-1; i++){
-          let regex = new RegExp(ups_regex_pattern[i]);
-          if(regex.test(textInput)){
-            setLastAddedCarrier('ups');
-            dispatch(getUpsTracking(textInput));
-          }
+        //works
+        // for(let i = 0; i< ups_regex_pattern.length-1; i++){
+        //   let regex = new RegExp(ups_regex_pattern[i]);
+        //   if(regex.test(textInput)){
+        //     setLastAddedCarrier('ups');
+        //     dispatch(getUpsTracking(textInput));
+        //   }
+        // }
+
+        // for(let i = 0; i< usps_regex_pattern.length-1; i++){
+        //   let regex = new RegExp(usps_regex_pattern[i]);
+        //   if(regex.test(textInput)){
+        //     setLastAddedCarrier('usps');
+        //     dispatch(getUspsTracking(textInput));
+        //   }
+        // }
+
+        const match = (pattern) => {
+          const regex = new RegExp(pattern);
+          return regex.test(textInput);
+        };
+
+        if(ups_regex_pattern.some(match)){
+          setLastAddedCarrier('UPS');
+          dispatch(getUpsTracking(textInput));
+          dispatch(showInfoSnackbar('Tracking Added!'));
         }
 
-        for(let i = 0; i< usps_regex_pattern.length-1; i++){
-          let regex = new RegExp(usps_regex_pattern[i]);
-          if(regex.test(textInput)){
-            setLastAddedCarrier('usps');
+        if(usps_regex_pattern.some(match)){
+            setLastAddedCarrier('USPS');
             dispatch(getUspsTracking(textInput));
-          }
+            dispatch(showInfoSnackbar('Tracking Added!'));
         }
+
       }
     };
 
@@ -176,9 +179,7 @@ const Home = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-                {/* {uspsTracking.length > 0? <TableCell>{uspsTracking[0].$.ID}</TableCell> : <TableCell></TableCell>} */}
-                {/* {uspsTracking.length > 0? <TableCell>{uspsTracking[0].TrackSummary[0]}</TableCell> : <TableCell></TableCell>} */}
-                {trackingNumbers.map((row) => (
+                {trackingNumberList.map((row) => (
                   <TableRow>
                     <TableCell>{row.carrier}</TableCell>
                     <TableCell>{row.id}</TableCell>
@@ -189,6 +190,7 @@ const Home = () => {
             </TableBody>
           </Table>
         </TableContainer>
+        <Snackbar/>
     </div>
     );
 };

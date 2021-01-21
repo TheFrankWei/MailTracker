@@ -5,9 +5,12 @@ import uspsReducers from './UspsReducers';
 import dhlReducers from './DhlReducers';
 import fedexReducers from './FedexReducers';
 
+import snackbarReducers from './SnackbarReducers';
+
 export default combineReducers({
 upsReducers,
 uspsReducers,
 dhlReducers,
 fedexReducers,
+snackbarReducers,
 });
