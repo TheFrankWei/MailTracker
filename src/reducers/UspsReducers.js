@@ -34,7 +34,7 @@ import {parseString} from 'xml2js';
           jsonFromXML = JSON.parse(jsonString);
           
           currentTracking = {
-            carrier: 'usps',
+            carrier: 'USPS',
             id:  jsonFromXML.TrackResponse.TrackInfo[0].$.ID,
             trackingSummary: jsonFromXML.TrackResponse.TrackInfo[0].TrackSummary[0],
           };

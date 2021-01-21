@@ -154,7 +154,10 @@ const Home = () => {
 
     return (
     <div className={classes.home_container}>   
+      <div>
         <h1>MailTracker</h1> 
+      </div>
+      <div>
         <form>
           <TextField 
             variant="outlined" 
@@ -168,7 +171,8 @@ const Home = () => {
             Track Package!
           </Button>
         </form>
-
+      </div>
+      <div>
         <TableContainer component={Paper}>
           <Table>
             <TableHead>
@@ -190,7 +194,8 @@ const Home = () => {
             </TableBody>
           </Table>
         </TableContainer>
-        <Snackbar/>
+      </div>
+      <Snackbar/>
     </div>
     );
 };

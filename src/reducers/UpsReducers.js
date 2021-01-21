@@ -24,7 +24,7 @@ import {
       case GET_UPS_TRACKING_SUCCEEDED:
         let data = action.response.data;
         let currentTracking = {
-          carrier: 'ups',
+          carrier: 'UPS',
           //detect below if there is a warning in the tracking label pls omfg im jsut typing randomly here for no reason but to test my keyboard... its kinda cool tho lol
           id: data.trackResponse.shipment[0].hasOwnProperty('package') ? data.trackResponse.shipment[0].package[0].trackingNumber : 'not found', 
           trackingSummary:  data.trackResponse.shipment[0].hasOwnProperty('package') ? `${data.trackResponse.shipment[0].package[0].activity[0].status.description + ' at ' +
