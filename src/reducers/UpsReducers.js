@@ -23,14 +23,28 @@ import {
         return newState;
       case GET_UPS_TRACKING_SUCCEEDED:
         let data = action.response.data;
-        let currentTracking = {
-          carrier: 'UPS',
-          //detect below if there is a warning in the tracking label pls omfg im jsut typing randomly here for no reason but to test my keyboard... its kinda cool tho lol
-          id: data.trackResponse.shipment[0].hasOwnProperty('package') ? data.trackResponse.shipment[0].package[0].trackingNumber : 'not found', 
-          trackingSummary:  data.trackResponse.shipment[0].hasOwnProperty('package') ? `${data.trackResponse.shipment[0].package[0].activity[0].status.description + ' at ' +
-                            data.trackResponse.shipment[0].package[0].activity[0].location.address.city +  ', ' + 
-                            data.trackResponse.shipment[0].package[0].activity[0].location.address.stateProvince}` : 'not found',
-        };
+        let currentTracking = data.trackResponse.shipment[0].hasOwnProperty('warnings') ? 
+          {
+            carrier:'UPS',
+            id: '', //should this have the error id?
+            trackingSummary: [data.trackResponse.shipment[0].warnings[0].message, ],
+          } 
+          :
+          {
+            carrier: 'UPS',
+            id: data.trackResponse.shipment[0].package[0].trackingNumber, 
+          // trackingSummary:  data.trackResponse.shipment[0].hasOwnProperty('package') ? `${data.trackResponse.shipment[0].package[0].activity[0].status.description + ' at ' +
+          //                   data.trackResponse.shipment[0].package[0].activity[0].location.address.city +  ', ' + 
+          //                   data.trackResponse.shipment[0].package[0].activity[0].location.address.stateProvince}` : 'not found',
+            trackingSummary: data.trackResponse.shipment[0].package[0].activity.map(activity => {
+                                                                                                  let status = activity.status.description;
+                                                                                                  let date =`${activity.date? ' ' : ''}` + activity.date + 
+                                                                                                            `${activity.time? ', ' : ''}` + activity.time; 
+                                                                                                  let location =`${activity.location.address.city? ', ' : ''}` + activity.location.address.city + 
+                                                                                                                `${activity.location.address.stateProvince? ', ' : ''}` + activity.location.address.stateProvince;
+                                                                                                  return status + date + location;
+                                                                                                }),
+          }
         newState = {
           ...state,
           isLoading: false,
