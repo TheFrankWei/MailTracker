@@ -1,0 +1,14 @@
+type Users @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  password: String
+  TrackingNumbers: [TrackingNumbers] @connection(keyName: "byUsers", fields: ["id"])
+}
+
+type TrackingNumbers @model @auth(rules: [{allow: public}]) @key(name: "byUsers", fields: ["untitledmodelID"]) {
+  id: ID!
+  carrier: String
+  tracking_summary: String
+  user_notes: String
+  untitledmodelID: ID!
+}
+ 
