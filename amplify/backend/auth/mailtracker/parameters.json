@@ -1,7 +1,7 @@
 {
     "identityPoolName": "testAuthIdentityPool",
     "allowUnauthenticatedIdentities": false,
-    "resourceNameTruncated": "mailtr2ee1b23b",
+    "resourceNameTruncated": "mailtr8bae6a97",
     "userPoolName": "mailtracker",
     "autoVerifiedAttributes": [
         "email"
@@ -32,9 +32,9 @@
     "userpoolClientReadAttributes": [
         "email"
     ],
-    "userpoolClientLambdaRole": "mailtr2ee1b23b_userpoolclient_lambda_role",
+    "userpoolClientLambdaRole": "mailtr8bae6a97_userpoolclient_lambda_role",
     "userpoolClientSetAttributes": false,
-    "sharedId": "2ee1b23b",
+    "sharedId": "8bae6a97",
     "resourceName": "mailtracker",
     "authSelections": "identityPoolAndUserPool",
     "authRoleArn": {
