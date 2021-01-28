@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useRef} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { isEmpty } from 'lodash';
-
+//
 // import { listNotes } from './graphql/queries';
 // import { createNote as createNoteMutation, deleteNote as deleteNoteMutation } from './graphql/mutations';
 import {makeStyles, 
