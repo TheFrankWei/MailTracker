@@ -1,8 +1,8 @@
 {
-    "identityPoolName": "testAuthIdentityPool",
+    "identityPoolName": "mailtracker73d85d42_identitypool_73d85d42",
     "allowUnauthenticatedIdentities": false,
-    "resourceNameTruncated": "mailtr8bae6a97",
-    "userPoolName": "mailtracker",
+    "resourceNameTruncated": "mailtr73d85d42",
+    "userPoolName": "mailtracker73d85d42_userpool_73d85d42",
     "autoVerifiedAttributes": [
         "email"
     ],
@@ -12,16 +12,12 @@
     ],
     "smsAuthenticationMessage": "Your authentication code is {####}",
     "smsVerificationMessage": "Your verification code is {####}",
-    "emailVerificationSubject": "Mailtracker | Forgot password code: {####}",
-    "emailVerificationMessage": "Forgot password code: {####}",
+    "emailVerificationSubject": "Your verification code",
+    "emailVerificationMessage": "Your verification code is {####}",
     "defaultPasswordPolicy": false,
     "passwordPolicyMinLength": 8,
-    "passwordPolicyCharacters": [
-        "Requires Lowercase",
-        "Requires Uppercase"
-    ],
+    "passwordPolicyCharacters": [],
     "requiredAttributes": [
-        "preferred_username",
         "email"
     ],
     "userpoolClientGenerateSecret": true,
@@ -32,10 +28,10 @@
     "userpoolClientReadAttributes": [
         "email"
     ],
-    "userpoolClientLambdaRole": "mailtr8bae6a97_userpoolclient_lambda_role",
+    "userpoolClientLambdaRole": "mailtr73d85d42_userpoolclient_lambda_role",
     "userpoolClientSetAttributes": false,
-    "sharedId": "8bae6a97",
-    "resourceName": "mailtracker",
+    "sharedId": "73d85d42",
+    "resourceName": "mailtracker73d85d42",
     "authSelections": "identityPoolAndUserPool",
     "authRoleArn": {
         "Fn::GetAtt": [
@@ -49,13 +45,17 @@
             "Arn"
         ]
     },
-    "serviceName": "Cognito",
-    "useDefault": "manual",
-    "userPoolGroups": false,
+    "useDefault": "default",
+    "usernameAttributes": [
+        "email"
+    ],
+    "triggers": "{}",
     "userPoolGroupList": [],
-    "adminQueries": false,
-    "thirdPartyAuth": false,
-    "authProviders": [],
+    "serviceName": "Cognito",
     "usernameCaseSensitive": false,
+    "parentStack": {
+        "Ref": "AWS::StackId"
+    },
+    "permissions": [],
     "dependsOn": []
 }
