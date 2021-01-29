@@ -12,8 +12,16 @@
       "AmplifyAppId": "d1ke8hqw153ai4"
     },
     "categories": {
+      "function": {
+        "mailtracker77e1dce6CustomMessage": {
+          "REDIRECTURL": "https://main.d1ke8hqw153ai4.amplifyapp.com/",
+          "EMAILSUBJECT": "Mailtracker Verification!",
+          "EMAILMESSAGE": "Please click the link in this email body to verify your account creation at Mailtracker"
+        }
+      },
       "auth": {
-        "mailtracker73d85d42": {}
+        "mailtracker77e1dce6": {},
+        "mailtrackerb2f41c7d": {}
       }
     }
   }

@@ -1,8 +1,8 @@
 {
-    "identityPoolName": "mailtracker73d85d42_identitypool_73d85d42",
+    "identityPoolName": "mailtrackerb2f41c7d_identitypool_b2f41c7d",
     "allowUnauthenticatedIdentities": false,
-    "resourceNameTruncated": "mailtr73d85d42",
-    "userPoolName": "mailtracker73d85d42_userpool_73d85d42",
+    "resourceNameTruncated": "mailtrb2f41c7d",
+    "userPoolName": "mailtrackerb2f41c7d_userpool_b2f41c7d",
     "autoVerifiedAttributes": [
         "email"
     ],
@@ -28,10 +28,10 @@
     "userpoolClientReadAttributes": [
         "email"
     ],
-    "userpoolClientLambdaRole": "mailtr73d85d42_userpoolclient_lambda_role",
+    "userpoolClientLambdaRole": "mailtrb2f41c7d_userpoolclient_lambda_role",
     "userpoolClientSetAttributes": false,
-    "sharedId": "73d85d42",
-    "resourceName": "mailtracker73d85d42",
+    "sharedId": "b2f41c7d",
+    "resourceName": "mailtrackerb2f41c7d",
     "authSelections": "identityPoolAndUserPool",
     "authRoleArn": {
         "Fn::GetAtt": [

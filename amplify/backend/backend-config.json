@@ -22,7 +22,7 @@
     }
   },
   "auth": {
-    "mailtracker73d85d42": {
+    "mailtrackerb2f41c7d": {
       "service": "Cognito",
       "providerPlugin": "awscloudformation",
       "dependsOn": [],
