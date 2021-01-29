@@ -1,6 +1,7 @@
 import React, {useState, useEffect, useRef} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { isEmpty } from 'lodash';
+
 //
 // import { listNotes } from './graphql/queries';
 // import { createNote as createNoteMutation, deleteNote as deleteNoteMutation } from './graphql/mutations';
@@ -76,11 +77,14 @@ const Home = () => {
     const [textInput, setTextInput] = useState('');
     const [trackingNumberList, setTrackingNumberList] = useState([]);
     const [lastAddedCarrier, setLastAddedCarrier] = useState('');
+    const [userID, setUserID] = useState('');
     const prevTextInput = usePrevious(textInput);
 
     //didMount
     useEffect(()=>{
       // didMount pull saved tracking numbers from future backend
+      let cookie = window.localStorage.getItem('CognitoIdentityServiceProvider.688b3pevv50bth1g3ukn135gs.LastAuthUser');
+      setUserID(cookie);
     }, []);
 
 

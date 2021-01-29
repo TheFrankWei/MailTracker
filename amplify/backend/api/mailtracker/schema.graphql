@@ -1,14 +1,11 @@
-type Users @model @auth(rules: [{allow: public}]) {
+type TrackingNumbers @model @auth(rules: [{allow: private, operations: [read, create, update, delete]}]) {
   id: ID!
-  password: String
-  TrackingNumbers: [TrackingNumbers] @connection(keyName: "byUsers", fields: ["id"])
-}
-
-type TrackingNumbers @model @auth(rules: [{allow: public}]) @key(name: "byUsers", fields: ["untitledmodelID"]) {
-  id: ID!
-  carrier: String
-  tracking_summary: String
-  user_notes: String
-  untitledmodelID: ID!
+  userID: String!
+  carrier: String!
+  trackingNumber: String!
+  userNotes: String
+  trackingSummary: [String]
+  dateCreated: AWSTimestamp
+  dateLastUpdated: AWSTimestamp
 }
  

@@ -1,62 +1,5 @@
 export const schema = {
     "models": {
-        "Users": {
-            "name": "Users",
-            "fields": {
-                "id": {
-                    "name": "id",
-                    "isArray": false,
-                    "type": "ID",
-                    "isRequired": true,
-                    "attributes": []
-                },
-                "password": {
-                    "name": "password",
-                    "isArray": false,
-                    "type": "String",
-                    "isRequired": false,
-                    "attributes": []
-                },
-                "TrackingNumbers": {
-                    "name": "TrackingNumbers",
-                    "isArray": true,
-                    "type": {
-                        "model": "TrackingNumbers"
-                    },
-                    "isRequired": false,
-                    "attributes": [],
-                    "isArrayNullable": true,
-                    "association": {
-                        "connectionType": "HAS_MANY",
-                        "associatedWith": "untitledmodelID"
-                    }
-                }
-            },
-            "syncable": true,
-            "pluralName": "Users",
-            "attributes": [
-                {
-                    "type": "model",
-                    "properties": {}
-                },
-                {
-                    "type": "auth",
-                    "properties": {
-                        "rules": [
-                            {
-                                "allow": "public",
-                                "operations": [
-                                    "create",
-                                    "update",
-                                    "delete",
-                                    "read"
-                                ]
-                            }
-                        ]
-                    }
-                }
-            ]
-        },
         "TrackingNumbers": {
             "name": "TrackingNumbers",
             "fields": {
@@ -67,32 +10,54 @@ export const schema = {
                     "isRequired": true,
                     "attributes": []
                 },
+                "userID": {
+                    "name": "userID",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": true,
+                    "attributes": []
+                },
                 "carrier": {
                     "name": "carrier",
                     "isArray": false,
                     "type": "String",
-                    "isRequired": false,
-                    "attributes": []
-                },
-                "tracking_summary": {
-                    "name": "tracking_summary",
-                    "isArray": false,
-                    "type": "String",
-                    "isRequired": false,
-                    "attributes": []
-                },
-                "user_notes": {
-                    "name": "user_notes",
-                    "isArray": false,
-                    "type": "String",
-                    "isRequired": false,
-                    "attributes": []
-                },
-                "untitledmodelID": {
-                    "name": "untitledmodelID",
-                    "isArray": false,
-                    "type": "ID",
                     "isRequired": true,
+                    "attributes": []
+                },
+                "trackingNumber": {
+                    "name": "trackingNumber",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "userNotes": {
+                    "name": "userNotes",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "trackingSummary": {
+                    "name": "trackingSummary",
+                    "isArray": true,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": [],
+                    "isArrayNullable": true
+                },
+                "dateCreated": {
+                    "name": "dateCreated",
+                    "isArray": false,
+                    "type": "AWSTimestamp",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "dateLastUpdated": {
+                    "name": "dateLastUpdated",
+                    "isArray": false,
+                    "type": "AWSTimestamp",
+                    "isRequired": false,
                     "attributes": []
                 }
             },
@@ -104,25 +69,16 @@ export const schema = {
                     "properties": {}
                 },
                 {
-                    "type": "key",
-                    "properties": {
-                        "name": "byUsers",
-                        "fields": [
-                            "untitledmodelID"
-                        ]
-                    }
-                },
-                {
                     "type": "auth",
                     "properties": {
                         "rules": [
                             {
-                                "allow": "public",
+                                "allow": "private",
                                 "operations": [
+                                    "read",
                                     "create",
                                     "update",
-                                    "delete",
-                                    "read"
+                                    "delete"
                                 ]
                             }
                         ]
@@ -133,5 +89,5 @@ export const schema = {
     },
     "enums": {},
     "nonModels": {},
-    "version": "a15e227a8475ebe68c0c2572eef33be5"
+    "version": "b37e06d5bbaf60ae28f2b9d89dbf0040"
 };
