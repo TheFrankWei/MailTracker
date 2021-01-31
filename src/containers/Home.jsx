@@ -26,6 +26,7 @@ import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import Snackbar from '../components/Snackbar';
 
 //actions
+import { getTracking } from '../actions/TrackingActions';
 import { getUpsTracking } from '../actions/UpsActions';
 import { getUspsTracking } from '../actions/UspsActions';
 import { showInfoSnackbar, showErrorSnackbar } from '../actions/SnackbarActions';
@@ -77,14 +78,12 @@ const Home = () => {
     const [textInput, setTextInput] = useState('');
     const [trackingNumberList, setTrackingNumberList] = useState([]);
     const [lastAddedCarrier, setLastAddedCarrier] = useState('');
-    const [userID, setUserID] = useState('');
     const prevTextInput = usePrevious(textInput);
-
     //didMount
     useEffect(()=>{
       // didMount pull saved tracking numbers from future backend
-      let cookie = window.localStorage.getItem('CognitoIdentityServiceProvider.688b3pevv50bth1g3ukn135gs.LastAuthUser');
-      setUserID(cookie);
+      let userId = window.localStorage.getItem(process.env.REACT_APP_AWS_USER_ID_STORAGE_KEY);
+      dispatch(getTracking(userId));
     }, []);
 
 

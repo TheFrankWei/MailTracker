@@ -4,15 +4,13 @@ import { ModelInit, MutableModel, PersistentModelConstructor } from "@aws-amplif
 
 
 
-export declare class TrackingNumbers {
+export declare class TrackingNumber {
   readonly id: string;
   readonly userID: string;
-  readonly carrier: string;
-  readonly trackingNumber: string;
+  readonly carrier?: string;
+  readonly trackingNumber?: string;
   readonly userNotes?: string;
   readonly trackingSummary?: (string | null)[];
-  readonly dateCreated?: number;
-  readonly dateLastUpdated?: number;
-  constructor(init: ModelInit<TrackingNumbers>);
-  static copyOf(source: TrackingNumbers, mutator: (draft: MutableModel<TrackingNumbers>) => MutableModel<TrackingNumbers> | void): TrackingNumbers;
+  constructor(init: ModelInit<TrackingNumber>);
+  static copyOf(source: TrackingNumber, mutator: (draft: MutableModel<TrackingNumber>) => MutableModel<TrackingNumber> | void): TrackingNumber;
 }

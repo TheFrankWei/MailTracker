@@ -4,8 +4,8 @@ import { schema } from './schema';
 
 
 
-const { TrackingNumbers } = initSchema(schema);
+const { TrackingNumber } = initSchema(schema);
 
 export {
-  TrackingNumbers
+  TrackingNumber
 };

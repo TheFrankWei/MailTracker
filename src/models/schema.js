@@ -1,7 +1,7 @@
 export const schema = {
     "models": {
-        "TrackingNumbers": {
-            "name": "TrackingNumbers",
+        "TrackingNumber": {
+            "name": "TrackingNumber",
             "fields": {
                 "id": {
                     "name": "id",
@@ -21,14 +21,14 @@ export const schema = {
                     "name": "carrier",
                     "isArray": false,
                     "type": "String",
-                    "isRequired": true,
+                    "isRequired": false,
                     "attributes": []
                 },
                 "trackingNumber": {
                     "name": "trackingNumber",
                     "isArray": false,
                     "type": "String",
-                    "isRequired": true,
+                    "isRequired": false,
                     "attributes": []
                 },
                 "userNotes": {
@@ -45,20 +45,6 @@ export const schema = {
                     "isRequired": false,
                     "attributes": [],
                     "isArrayNullable": true
-                },
-                "dateCreated": {
-                    "name": "dateCreated",
-                    "isArray": false,
-                    "type": "AWSTimestamp",
-                    "isRequired": false,
-                    "attributes": []
-                },
-                "dateLastUpdated": {
-                    "name": "dateLastUpdated",
-                    "isArray": false,
-                    "type": "AWSTimestamp",
-                    "isRequired": false,
-                    "attributes": []
                 }
             },
             "syncable": true,
@@ -89,5 +75,5 @@ export const schema = {
     },
     "enums": {},
     "nonModels": {},
-    "version": "b37e06d5bbaf60ae28f2b9d89dbf0040"
+    "version": "c4065dbe6800e20769a15321100036dc"
 };

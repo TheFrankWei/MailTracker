@@ -1,11 +1,9 @@
-type TrackingNumbers @model @auth(rules: [{allow: private, operations: [read, create, update, delete]}]) {
-  id: ID!
+type TrackingNumber @model @auth(rules: [{allow: private, operations: [read, create, update, delete]}]) {
+  id: ID
   userID: String!
-  carrier: String!
-  trackingNumber: String!
+  carrier: String
+  trackingNumber: String
   userNotes: String
   trackingSummary: [String]
-  dateCreated: AWSTimestamp
-  dateLastUpdated: AWSTimestamp
 }
  
