@@ -30,7 +30,7 @@ import {
             newState = {
                 ...state,
                 isLoading: false,
-                trackingNumbers: action.response.data,
+                trackingNumbers: action.response.data.listTrackingNumbers.items,
             };
             return newState;
         case GET_TRACKING_FAILED:

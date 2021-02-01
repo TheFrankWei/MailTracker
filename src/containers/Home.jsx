@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useRef} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { isEmpty } from 'lodash';
+import { forEach, isEmpty } from 'lodash';
 
 //
 // import { listNotes } from './graphql/queries';
@@ -69,6 +69,8 @@ const Home = () => {
     const classes = useStyles();
 
     const dispatch = useDispatch();
+
+    const trackingNumbers = useSelector(state=> state.trackingReducers.trackingNumbers);
     const uspsTracking = useSelector(state => state.uspsReducers.uspsTracking);
     const uspsLastAdded = useSelector(state => state.uspsReducers.uspsLastAdded);
 
@@ -85,7 +87,19 @@ const Home = () => {
       let userId = window.localStorage.getItem(process.env.REACT_APP_AWS_USER_ID_STORAGE_KEY);
       dispatch(getTracking(userId));
     }, []);
+    
+    useEffect(()=>{
+      trackingNumbers.forEach(item => {
+        let addedTracking = {
+          carrier: item.carrier,
+          trackingNumber: item.trackingNumber,
+          trackingSummary: item.trackingSummary[0],
+          history: item.trackingSummary.slice(1),
+        }
+        setTrackingNumberList([addedTracking, ...trackingNumberList]);
+      } );
 
+    }, [trackingNumbers]);
 
     //didUpdate
     useEffect(()=>{
@@ -95,7 +109,7 @@ const Home = () => {
         case 'UPS':
           lastAddedTrackingNumber={ 
                                     carrier: upsLastAdded.carrier,
-                                    id: upsLastAdded.id || prevTextInput,
+                                    trackingNumber: upsLastAdded.id || prevTextInput,
                                     trackingSummary: upsLastAdded.trackingSummary[0],
                                     history: upsLastAdded.trackingSummary.slice(1),
                                   }
@@ -103,7 +117,7 @@ const Home = () => {
         case 'USPS':
           lastAddedTrackingNumber={ 
                                     carrier: uspsLastAdded.carrier,
-                                    id: uspsLastAdded.id || prevTextInput,
+                                    trackingNumber: uspsLastAdded.id || prevTextInput,
                                     trackingSummary: uspsLastAdded.trackingSummary[0],
                                     history: uspsLastAdded.trackingSummary.slice(1),
                                   }
@@ -119,7 +133,7 @@ const Home = () => {
     const findTracking = () => {
       if(textInput === ''){
         dispatch(showErrorSnackbar('No tracking number entered.'));
-      } else if(trackingNumberList.find(trackingNumber => trackingNumber.id === textInput)){
+      } else if(trackingNumberList.find(item => item.trackingNumber === textInput)){
         dispatch(showErrorSnackbar("You've already entered this number! Please enter a new tracking number."));
       } else {
         // dispatch(getUpsTracking(textInput));
@@ -165,7 +179,7 @@ const Home = () => {
               </IconButton>
             </TableCell>
             <TableCell>{row.carrier}</TableCell>
-            <TableCell>{row.id}</TableCell>
+            <TableCell>{row.trackingNumber}</TableCell>
             <TableCell>{row.trackingSummary}</TableCell>
           </TableRow>
         
@@ -242,7 +256,7 @@ const Home = () => {
             </TableHead>
             <TableBody>
                 {trackingNumberList.map((row) => (
-                  <Row key={row.id} row={row}/>
+                  <Row key={row.trackingNumber} row={row}/>
                 ))}
             </TableBody>
           </Table>

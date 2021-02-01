@@ -36,7 +36,7 @@ import {parseString} from 'xml2js';
 
           currentTracking = {
             carrier: 'USPS',
-            id:  jsonFromXML.TrackResponse.TrackInfo[0].$.ID,
+            trackingNumber:  jsonFromXML.TrackResponse.TrackInfo[0].$.ID,
             trackingSummary: [jsonFromXML.TrackResponse.TrackInfo[0].TrackSummary[0], ...jsonFromXML.TrackResponse.TrackInfo[0].TrackDetail],
           };
         });

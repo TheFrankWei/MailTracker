@@ -26,13 +26,13 @@ import {
         let currentTracking = data.trackResponse.shipment[0].hasOwnProperty('warnings') ? 
           {
             carrier:'UPS',
-            id: '', //should this have the error id?
+            trackingNumber: '', //should this have the error id?
             trackingSummary: [data.trackResponse.shipment[0].warnings[0].message, ],
           } 
           :
           {
             carrier: 'UPS',
-            id: data.trackResponse.shipment[0].package[0].trackingNumber, 
+            trackingNumber: data.trackResponse.shipment[0].package[0].trackingNumber, 
           // trackingSummary:  data.trackResponse.shipment[0].hasOwnProperty('package') ? `${data.trackResponse.shipment[0].package[0].activity[0].status.description + ' at ' +
           //                   data.trackResponse.shipment[0].package[0].activity[0].location.address.city +  ', ' + 
           //                   data.trackResponse.shipment[0].package[0].activity[0].location.address.stateProvince}` : 'not found',

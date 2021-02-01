@@ -42,10 +42,12 @@ const onGetTrackingStarted = () => ({
       const variables = {
         "userID": userID
       };
-      return Instance.axiosInstance().get(API.graphql(graphqlOperation(queries.getTrackingNumbersByUser, variables)))
+
+      //no use of axiosInstance?
+      return API.graphql(graphqlOperation(queries.getTrackingNumbersByUser, variables))
         .then((response) => {
           dispatch(onGetTrackingSucceeded(response));
-          return response.data;
+          return response;
         })
         .catch((error) => {
           const { response } = error;

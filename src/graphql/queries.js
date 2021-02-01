@@ -1,6 +1,6 @@
 const getTrackingNumbersByUser = `
     query getTrackingNumbersByUser($userID: String!) {
-        listTrackingNumbers(filter: {userID: {eq:$userID}}) {
+        listTrackingNumbers(filter: {userID: {contains: $userID}}) {
             items {
                 carrier
                 trackingNumber
