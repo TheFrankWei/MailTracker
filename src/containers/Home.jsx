@@ -1,10 +1,7 @@
 import React, {useState, useEffect, useRef} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { forEach, isEmpty } from 'lodash';
+import { isEqual } from 'lodash';
 
-//
-// import { listNotes } from './graphql/queries';
-// import { createNote as createNoteMutation, deleteNote as deleteNoteMutation } from './graphql/mutations';
 import {makeStyles, 
         TextField, 
         Button,
@@ -80,53 +77,60 @@ const Home = () => {
     const [textInput, setTextInput] = useState('');
     const [trackingNumberList, setTrackingNumberList] = useState([]);
     const [lastAddedCarrier, setLastAddedCarrier] = useState('');
-    const prevTextInput = usePrevious(textInput);
-    //didMount
+
+    let prevTextInput = usePrevious(textInput);
+    let prevUPSLastAdded = usePrevious(upsLastAdded);
+    let prevUSPSLastAdded = usePrevious(uspsLastAdded);
+    let prevTrackingNumbers = usePrevious(trackingNumbers);
+
+    //useEffects to pull data from graphQL backend
     useEffect(()=>{
       // didMount pull saved tracking numbers from future backend
       let userId = window.localStorage.getItem(process.env.REACT_APP_AWS_USER_ID_STORAGE_KEY);
       dispatch(getTracking(userId));
     }, []);
     
-    useEffect(()=>{
-      trackingNumbers.forEach(item => {
-        let addedTracking = {
-          carrier: item.carrier,
-          trackingNumber: item.trackingNumber,
-          trackingSummary: item.trackingSummary[0],
-          history: item.trackingSummary.slice(1),
-        }
-        setTrackingNumberList([addedTracking, ...trackingNumberList]);
-      } );
-
+    useEffect(()=>{//must compare with trackingNumbers prevprops
+      if(!isEqual(trackingNumbers, prevTrackingNumbers)){
+        trackingNumbers.forEach(item => {
+          let addedTracking = {
+            carrier: item.carrier,
+            trackingNumber: item.trackingNumber,
+            trackingSummary: item.trackingSummary[0],
+            history: item.trackingSummary.slice(1),
+            userNotes: item.userNotes,
+          }
+          setTrackingNumberList([addedTracking, ...trackingNumberList]);
+        } );
+      }
     }, [trackingNumbers]);
 
-    //didUpdate
+    //useEffect when a response is recieved from USPS/UPS APIs
     useEffect(()=>{
-      let lastAddedTrackingNumber; //const or let
-      //  prevTextInput used incase api returns null for id
-      switch(lastAddedCarrier){ //put this in prevprops? on state update, followed by setTrackingNumbers() if that state 
-        case 'UPS':
-          lastAddedTrackingNumber={ 
-                                    carrier: upsLastAdded.carrier,
-                                    trackingNumber: upsLastAdded.id || prevTextInput,
-                                    trackingSummary: upsLastAdded.trackingSummary[0],
-                                    history: upsLastAdded.trackingSummary.slice(1),
-                                  }
-          break;
-        case 'USPS':
-          lastAddedTrackingNumber={ 
-                                    carrier: uspsLastAdded.carrier,
-                                    trackingNumber: uspsLastAdded.id || prevTextInput,
-                                    trackingSummary: uspsLastAdded.trackingSummary[0],
-                                    history: uspsLastAdded.trackingSummary.slice(1),
-                                  }
-          break;
-        default:
-          break;
-      }
-      if(lastAddedTrackingNumber){
-        setTrackingNumberList([lastAddedTrackingNumber, ...trackingNumberList]);
+
+      let lastAddedTrackingNumber={ };
+      //  prevTextInput used incase api returns null for tracking number
+      if(!isEqual(upsLastAdded, prevUPSLastAdded) ||
+         !isEqual(uspsLastAdded, prevUSPSLastAdded) ){
+        switch(lastAddedCarrier){ 
+          case 'UPS':
+            lastAddedTrackingNumber.carrier=upsLastAdded.carrier;
+            lastAddedTrackingNumber.trackingNumber=upsLastAdded.id || prevTextInput;
+            lastAddedTrackingNumber.trackingSummary=upsLastAdded.trackingSummary[0];
+            lastAddedTrackingNumber.history=upsLastAdded.trackingSummary.slice(1);                       
+            break;
+          case 'USPS':
+            lastAddedTrackingNumber.carrier=uspsLastAdded.carrier;
+            lastAddedTrackingNumber.trackingNumber=uspsLastAdded.id || prevTextInput;
+            lastAddedTrackingNumber.trackingSummary=uspsLastAdded.trackingSummary[0];
+            lastAddedTrackingNumber.history=uspsLastAdded.trackingSummary.slice(1);                
+            break;
+          default:
+            break;
+        }
+        if(lastAddedTrackingNumber){
+          setTrackingNumberList([lastAddedTrackingNumber, ...trackingNumberList]);
+        }
       }
     }, [upsLastAdded, uspsLastAdded]); 
 
@@ -136,11 +140,12 @@ const Home = () => {
       } else if(trackingNumberList.find(item => item.trackingNumber === textInput)){
         dispatch(showErrorSnackbar("You've already entered this number! Please enter a new tracking number."));
       } else {
-        // dispatch(getUpsTracking(textInput));
-        //1Z5338FF0107231059
-        //1Z75AR481395060710
-        // dispatch(getUspsTracking(textInput));
-        // dispatch(getUspsTracking('9405509202348003831398'));
+        // UPS examples
+        //1Z5338FF0107231059 -not found
+        //1Z75AR481395060710 -works
+
+        // USPS examples
+        // 9405509202348003831398 -works
 
         const match = (pattern) => {
           const regex = new RegExp(pattern);
@@ -181,6 +186,7 @@ const Home = () => {
             <TableCell>{row.carrier}</TableCell>
             <TableCell>{row.trackingNumber}</TableCell>
             <TableCell>{row.trackingSummary}</TableCell>
+            <TableCell>{row.userNotes}</TableCell>
           </TableRow>
         
           <TableRow>
@@ -192,13 +198,7 @@ const Home = () => {
               </Typography>
 
               <Table size="small" aria-label="tracking details">
-                {/* <TableHead>
-                  <TableRow>
-                    <TableCell>Details</TableCell>
-                  </TableRow>
-                </TableHead> */}
-
-                {row.history.length > 0 ? 
+                {typeof(row.history) !== "undefined"? 
                   ( 
                     <TableBody>
                       {row.history.map((historyRow) => (
@@ -251,7 +251,8 @@ const Home = () => {
                 <TableCell/>
                 <TableCell>Carrier</TableCell>
                 <TableCell>Tracking Number</TableCell>
-                <TableCell> Tracking Summary</TableCell>
+                <TableCell>Tracking Summary</TableCell>
+                <TableCell>User Notes</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>

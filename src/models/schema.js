@@ -21,14 +21,14 @@ export const schema = {
                     "name": "carrier",
                     "isArray": false,
                     "type": "String",
-                    "isRequired": false,
+                    "isRequired": true,
                     "attributes": []
                 },
                 "trackingNumber": {
                     "name": "trackingNumber",
                     "isArray": false,
                     "type": "String",
-                    "isRequired": false,
+                    "isRequired": true,
                     "attributes": []
                 },
                 "userNotes": {

@@ -7,8 +7,8 @@ import { ModelInit, MutableModel, PersistentModelConstructor } from "@aws-amplif
 export declare class TrackingNumber {
   readonly id: string;
   readonly userID: string;
-  readonly carrier?: string;
-  readonly trackingNumber?: string;
+  readonly carrier: string;
+  readonly trackingNumber: string;
   readonly userNotes?: string;
   readonly trackingSummary?: (string | null)[];
   constructor(init: ModelInit<TrackingNumber>);
