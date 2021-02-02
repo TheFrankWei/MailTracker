@@ -51,17 +51,15 @@ const onGetTrackingStarted = () => ({
   });
 
   
-  export const createTracking = (userID, carrier, trackingNumber, trackingSummary, userNotes) => (dispatch) => {
-    dispatch(onCreateTrackingStarted());
-
+  export const createTracking = (userID, carrier, trackingNumber, trackingSummary,) => (dispatch) => {
     const variables = {
       "userID": userID,
       "carrier": carrier,
       "trackingNumber": trackingNumber,
       "trackingSummary": trackingSummary,
-      "userNotes": userNotes,
     };
 
+    dispatch(onCreateTrackingStarted());
     //no use of axiosInstance?
     return API.graphql(graphqlOperation(mutations.createTrackingNumber, variables))
       .then((response) => {

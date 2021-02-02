@@ -3,7 +3,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { isEqual } from 'lodash';
 
 import {makeStyles, 
-        TextField, 
+        TextField,
+        IconButton, 
         Button,
         Box,
         Typography, 
@@ -13,17 +14,18 @@ import {makeStyles,
         TableRow, 
         TableCell, 
         TableBody, 
-        IconButton,
         Collapse,
+        Tooltip,
         Paper, } from '@material-ui/core';
 
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
+import CloseIcon from '@material-ui/icons/Close';
 
 import Snackbar from '../components/Snackbar';
 
 //actions
-import { getTracking } from '../actions/TrackingActions';
+import { createTracking, getTracking, } from '../actions/TrackingActions';
 import { getUpsTracking } from '../actions/UpsActions';
 import { getUspsTracking } from '../actions/UspsActions';
 import { showInfoSnackbar, showErrorSnackbar } from '../actions/SnackbarActions';
@@ -79,9 +81,9 @@ const Home = () => {
     const [lastAddedCarrier, setLastAddedCarrier] = useState('');
 
     let prevTextInput = usePrevious(textInput);
+    let prevTrackingNumbers = usePrevious(trackingNumbers);
     let prevUPSLastAdded = usePrevious(upsLastAdded);
     let prevUSPSLastAdded = usePrevious(uspsLastAdded);
-    let prevTrackingNumbers = usePrevious(trackingNumbers);
 
     //useEffects to pull data from graphQL backend
     useEffect(()=>{
@@ -91,44 +93,60 @@ const Home = () => {
     }, []);
     
     useEffect(()=>{//must compare with trackingNumbers prevprops
+
       if(!isEqual(trackingNumbers, prevTrackingNumbers)){
+        let trackingReduxToState = [];
         trackingNumbers.forEach(item => {
           let addedTracking = {
+            id: item.id,
             carrier: item.carrier,
             trackingNumber: item.trackingNumber,
             trackingSummary: item.trackingSummary[0],
             history: item.trackingSummary.slice(1),
             userNotes: item.userNotes,
+            _version: item._version
           }
-          setTrackingNumberList([addedTracking, ...trackingNumberList]);
-        } );
+          trackingReduxToState.push(addedTracking);
+
+        });
+        if(trackingReduxToState.length > 0){
+          setTrackingNumberList(trackingReduxToState);
+        }
       }
     }, [trackingNumbers]);
 
     //useEffect when a response is recieved from USPS/UPS APIs
     useEffect(()=>{
 
-      let lastAddedTrackingNumber={ };
-      //  prevTextInput used incase api returns null for tracking number
       if(!isEqual(upsLastAdded, prevUPSLastAdded) ||
-         !isEqual(uspsLastAdded, prevUSPSLastAdded) ){
+         !isEqual(uspsLastAdded, prevUSPSLastAdded)){
+        let lastAddedTrackingNumber;
         switch(lastAddedCarrier){ 
           case 'UPS':
-            lastAddedTrackingNumber.carrier=upsLastAdded.carrier;
-            lastAddedTrackingNumber.trackingNumber=upsLastAdded.id || prevTextInput;
-            lastAddedTrackingNumber.trackingSummary=upsLastAdded.trackingSummary[0];
-            lastAddedTrackingNumber.history=upsLastAdded.trackingSummary.slice(1);                       
+            lastAddedTrackingNumber={
+                                      carrier:upsLastAdded.carrier,
+                                      trackingNumber:upsLastAdded.id || prevTextInput,
+                                      trackingSummary:upsLastAdded.trackingSummary[0],
+                                      history:upsLastAdded.trackingSummary.slice(1),
+                                    }                       
             break;
           case 'USPS':
-            lastAddedTrackingNumber.carrier=uspsLastAdded.carrier;
-            lastAddedTrackingNumber.trackingNumber=uspsLastAdded.id || prevTextInput;
-            lastAddedTrackingNumber.trackingSummary=uspsLastAdded.trackingSummary[0];
-            lastAddedTrackingNumber.history=uspsLastAdded.trackingSummary.slice(1);                
+            lastAddedTrackingNumber={
+                                      carrier:uspsLastAdded.carrier,
+                                      trackingNumber:uspsLastAdded.id || prevTextInput,
+                                      trackingSummary:uspsLastAdded.trackingSummary[0],
+                                      history:uspsLastAdded.trackingSummary.slice(1),
+                                    }                                
             break;
           default:
             break;
         }
         if(lastAddedTrackingNumber){
+          let userId = window.localStorage.getItem(process.env.REACT_APP_AWS_USER_ID_STORAGE_KEY);
+          dispatch(createTracking(userId, 
+                                  lastAddedTrackingNumber.carrier, 
+                                  lastAddedTrackingNumber.trackingNumber, 
+                                  [lastAddedTrackingNumber.trackingSummary, ...lastAddedTrackingNumber.history]));
           setTrackingNumberList([lastAddedTrackingNumber, ...trackingNumberList]);
         }
       }
@@ -187,6 +205,13 @@ const Home = () => {
             <TableCell>{row.trackingNumber}</TableCell>
             <TableCell>{row.trackingSummary}</TableCell>
             <TableCell>{row.userNotes}</TableCell>
+            <TableCell>
+              <Tooltip title="Delete Tracking Number" arrow>
+                <IconButton alt="Delete Tracking Number">
+                  <CloseIcon/>
+                </IconButton>
+              </Tooltip>
+            </TableCell>
           </TableRow>
         
           <TableRow>
@@ -198,7 +223,7 @@ const Home = () => {
               </Typography>
 
               <Table size="small" aria-label="tracking details">
-                {typeof(row.history) !== "undefined"? 
+                {row.history.length > 0? 
                   ( 
                     <TableBody>
                       {row.history.map((historyRow) => (
@@ -253,6 +278,7 @@ const Home = () => {
                 <TableCell>Tracking Number</TableCell>
                 <TableCell>Tracking Summary</TableCell>
                 <TableCell>User Notes</TableCell>
+                <TableCell>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>

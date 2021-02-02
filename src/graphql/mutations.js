@@ -1,12 +1,10 @@
 const createTrackingNumber = `
-    mutation createTrackingNumber($userID: String!) {
+    mutation createTrackingNumber($userID: String!, $trackingNumber: String!, $carrier: String!, $trackingSummary: [String!]) {
         createTrackingNumber(input: {
                                         userID: $userID, 
                                         trackingNumber: $trackingNumber, 
                                         carrier: $carrier,
                                         trackingSummary: $trackingSummary,
-                                        userNotes: $userNotes,
-
                                     }){
                                         id
                                     }
