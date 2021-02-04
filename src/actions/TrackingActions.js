@@ -121,10 +121,9 @@ const onGetTrackingStarted = () => ({
         });
     };
 
-    export const updateTracking = (id, trackingSummary, userNotes) => (dispatch) => {
+    export const updateTracking = (id, userNotes) => (dispatch) => {
       const variables = {
         "id": id,
-        ...trackingSummary && { "trackingSummary": trackingSummary},
         ...userNotes && { "userNotes": userNotes},
       };   
 

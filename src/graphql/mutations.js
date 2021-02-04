@@ -22,7 +22,7 @@ const deleteTrackingNumber = `
 `
 
 const updateTrackingNumber = `
-    mutation updateTrackingNumber($id: ID!, trackingSummary:[String], $userNotes: String, ) {
+    mutation updateTrackingNumber($id: ID!, $trackingSummary:[String], $userNotes: String, ) {
         updateTrackingNumber(input: {id: $id, trackingSummary: $trackingSummary, userNotes: $userNotes, }) {
       id
       trackingSummary

@@ -24,7 +24,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import EditIcon from '@material-ui/icons/Edit';
 import SaveIcon from '@material-ui/icons/Save';
 
-
+import Row from '../components/Row';
 import Snackbar from '../components/Snackbar';
 
 //actions
@@ -82,7 +82,7 @@ const Home = () => {
     const [textInput, setTextInput] = useState('');
     const [trackingNumberList, setTrackingNumberList] = useState([]);
     const [lastAddedCarrier, setLastAddedCarrier] = useState('');
-    const [editEnabled, setEdit] = useState(false);
+  
 
     let prevTextInput = usePrevious(textInput);
     let prevTrackingNumbers = usePrevious(trackingNumbers);
@@ -206,13 +206,6 @@ const Home = () => {
       }
     };
 
-    const handleEdit = (id, index) => {
-      // dispatch(updateTracking(id))
-      // let trackingNumberListCopy = [...trackingNumberList];
-      // pullAt(trackingNumberListCopy, [index]);
-      // setTrackingNumberList(trackingNumberListCopy);
-      setEdit(false);
-    }
 
     const handleDelete = (id, index) => {
       dispatch(deleteTracking(id))
@@ -220,84 +213,6 @@ const Home = () => {
       pullAt(trackingNumberListCopy, [index]);
       setTrackingNumberList(trackingNumberListCopy);
     } 
-
-    const Row = (props) => {
-      const { row, index } = props;
-      const [open, setOpen] = useState(false);
-
-      return(
-        <React.Fragment>
-          <TableRow>
-            <TableCell>
-              <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
-                {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-              </IconButton>
-            </TableCell>
-            <TableCell>{row.carrier}</TableCell>
-            <TableCell>{row.trackingNumber}</TableCell>
-            <TableCell>{row.trackingSummary}</TableCell>
-            <TableCell>{editEnabled?( 
-                        <TextField id="outlined-basic" variant="outlined"/> 
-                        ):(
-                          row.userNotes
-                        )}
-            </TableCell>
-            <TableCell>
-              {editEnabled ? (
-                 <Tooltip title="Save Notes" arrow>
-                  <IconButton onClick={(e)=>handleEdit(row.id, index, e)}>
-                    <SaveIcon/>
-                  </IconButton>
-                 </Tooltip>
-                ) : (
-                <Tooltip title="Edit Notes" arrow>
-                <IconButton onClick={(e)=>setEdit(true)}>
-                  <EditIcon/>
-                </IconButton>
-                </Tooltip>
-                )
-              }
-              <Tooltip title="Delete Tracking Number" arrow>
-                <IconButton onClick={(e)=>handleDelete(row.id, index, e)}>
-                  <CloseIcon/>
-                </IconButton>
-              </Tooltip>
-            </TableCell>
-          </TableRow>
-        
-          <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-          <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box margin={1}>
-              <Typography variant="h6" gutterBottom component="div">
-                History
-              </Typography>
-
-              <Table size="small" aria-label="tracking details">
-                {row.history.length > 0? 
-                  ( 
-                    <TableBody>
-                      {row.history.map((historyRow) => (
-                        <TableRow >
-                          <TableCell>{historyRow}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  ) : (
-                    <TableBody>
-                      <TableRow>
-                        <TableCell> History is unavailable for this shipment. </TableCell>
-                      </TableRow>
-                    </TableBody>
-                  )}
-              </Table>
-            </Box>
-          </Collapse>
-        </TableCell>
-      </TableRow>
-        </React.Fragment>
-      )
-    }
 
     return (
     <div className={classes.home_container}>   
@@ -334,7 +249,7 @@ const Home = () => {
             </TableHead>
             <TableBody>
                 {trackingNumberList.length>0? trackingNumberList.map((row, index) => (
-                  <Row key={row.trackingNumber} row={row} index={index}/>
+                  <Row key={row.trackingNumber} row={row} index={index} handleDelete={(e)=>handleDelete(row.id, index, e)}/>
                 )) : null}
             </TableBody>
           </Table>
