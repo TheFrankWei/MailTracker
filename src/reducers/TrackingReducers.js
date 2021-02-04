@@ -61,7 +61,30 @@ import {
                 error: action.message,
             };
             return newState;
-        
+        case UPDATE_TRACKING_STARTED:
+            newState = {
+                ...state,
+                isLoading: true,
+            };
+            return newState;
+        case UPDATE_TRACKING_SUCCEEDED:
+            newState = {
+                ...state,
+                isLoading: false,
+                updatedTrackingSucceededResponse:{  
+                                                    "id":action.response.data.updateTrackingNumber.id,
+                                                    "trackingSummary":action.response.data.updateTrackingNumber.trackingSummary,
+                                                    "userNotes":action.response.data.updateTrackingNumber.userNotes,
+                                                },
+            };
+            return newState;
+        case UPDATE_TRACKING_FAILED:
+            newState = {
+                ...state,
+                isLoading: false,
+                error: action.message,
+            };
+            return newState;
         case DELETE_TRACKING_STARTED:
             newState = {
                 ...state,

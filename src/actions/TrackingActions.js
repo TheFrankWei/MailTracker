@@ -50,6 +50,20 @@ const onGetTrackingStarted = () => ({
     error,
   });
 
+  const onUpdateTrackingStarted = () => ({
+    type: UPDATE_TRACKING_STARTED,
+  });
+  
+  const onUpdateTrackingSucceeded = response => ({
+    type: UPDATE_TRACKING_SUCCEEDED,
+    response,
+  });
+  
+  const onUpdateTrackingFailed = error => ({
+    type: UPDATE_TRACKING_FAILED,
+    error,
+  });
+
   const onDeleteTrackingStarted = () => ({
     type: DELETE_TRACKING_STARTED,
   });
@@ -103,6 +117,27 @@ const onGetTrackingStarted = () => ({
         .catch((error) => {
           const { response } = error;
           dispatch(onGetTrackingFailed(response));
+          throw error;
+        });
+    };
+
+    export const updateTracking = (id, trackingSummary, userNotes) => (dispatch) => {
+      const variables = {
+        "id": id,
+        ...trackingSummary && { "trackingSummary": trackingSummary},
+        ...userNotes && { "userNotes": userNotes},
+      };   
+
+      dispatch(onUpdateTrackingStarted());
+      //no use of axiosInstance?
+      return API.graphql(graphqlOperation(mutations.updateTrackingNumber, variables))
+        .then((response) => {
+          dispatch(onUpdateTrackingSucceeded(response));
+          return response;
+        })
+        .catch((error) => {
+          const { response } = error;
+          dispatch(onUpdateTrackingFailed(response));
           throw error;
         });
     };

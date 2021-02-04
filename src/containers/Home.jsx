@@ -21,11 +21,14 @@ import {makeStyles,
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import CloseIcon from '@material-ui/icons/Close';
+import EditIcon from '@material-ui/icons/Edit';
+import SaveIcon from '@material-ui/icons/Save';
+
 
 import Snackbar from '../components/Snackbar';
 
 //actions
-import { deleteTracking, createTracking, getTracking, } from '../actions/TrackingActions';
+import { deleteTracking, createTracking, getTracking, updateTracking } from '../actions/TrackingActions';
 import { getUpsTracking } from '../actions/UpsActions';
 import { getUspsTracking } from '../actions/UspsActions';
 import { showInfoSnackbar, showErrorSnackbar } from '../actions/SnackbarActions';
@@ -79,6 +82,7 @@ const Home = () => {
     const [textInput, setTextInput] = useState('');
     const [trackingNumberList, setTrackingNumberList] = useState([]);
     const [lastAddedCarrier, setLastAddedCarrier] = useState('');
+    const [editEnabled, setEdit] = useState(false);
 
     let prevTextInput = usePrevious(textInput);
     let prevTrackingNumbers = usePrevious(trackingNumbers);
@@ -109,7 +113,7 @@ const Home = () => {
           
         });
         if(trackingReduxToState.length > 0){
-          setTrackingNumberList(trackingReduxToState);
+          setTrackingNumberList(trackingReduxToState.reverse()); //tracking will appear on screen same order as it was added visually
         }
       }
     }, [trackingNumbers]);
@@ -202,12 +206,20 @@ const Home = () => {
       }
     };
 
+    const handleEdit = (id, index) => {
+      // dispatch(updateTracking(id))
+      // let trackingNumberListCopy = [...trackingNumberList];
+      // pullAt(trackingNumberListCopy, [index]);
+      // setTrackingNumberList(trackingNumberListCopy);
+      setEdit(false);
+    }
+
     const handleDelete = (id, index) => {
       dispatch(deleteTracking(id))
       let trackingNumberListCopy = [...trackingNumberList];
       pullAt(trackingNumberListCopy, [index]);
       setTrackingNumberList(trackingNumberListCopy);
-    }
+    } 
 
     const Row = (props) => {
       const { row, index } = props;
@@ -224,10 +236,29 @@ const Home = () => {
             <TableCell>{row.carrier}</TableCell>
             <TableCell>{row.trackingNumber}</TableCell>
             <TableCell>{row.trackingSummary}</TableCell>
-            <TableCell>{row.userNotes}</TableCell>
+            <TableCell>{editEnabled?( 
+                        <TextField id="outlined-basic" variant="outlined"/> 
+                        ):(
+                          row.userNotes
+                        )}
+            </TableCell>
             <TableCell>
+              {editEnabled ? (
+                 <Tooltip title="Save Notes" arrow>
+                  <IconButton onClick={(e)=>handleEdit(row.id, index, e)}>
+                    <SaveIcon/>
+                  </IconButton>
+                 </Tooltip>
+                ) : (
+                <Tooltip title="Edit Notes" arrow>
+                <IconButton onClick={(e)=>setEdit(true)}>
+                  <EditIcon/>
+                </IconButton>
+                </Tooltip>
+                )
+              }
               <Tooltip title="Delete Tracking Number" arrow>
-                <IconButton alt="Delete Tracking Number" onClick={(e)=>handleDelete(row.id, index, e)}>
+                <IconButton onClick={(e)=>handleDelete(row.id, index, e)}>
                   <CloseIcon/>
                 </IconButton>
               </Tooltip>
