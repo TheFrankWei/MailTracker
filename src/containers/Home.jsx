@@ -227,7 +227,7 @@ const Home = () => {
             <TableCell>{row.userNotes}</TableCell>
             <TableCell>
               <Tooltip title="Delete Tracking Number" arrow>
-                <IconButton alt="Delete Tracking Number" onClick={(e)=>handleDelete(row.id, row._version, index, e)}>
+                <IconButton alt="Delete Tracking Number" onClick={(e)=>handleDelete(row.id, index, e)}>
                   <CloseIcon/>
                 </IconButton>
               </Tooltip>
