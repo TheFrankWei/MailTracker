@@ -31,7 +31,7 @@ import {
             newState = {
                 ...state,
                 isLoading: false,
-                createTrackingSucceededResponse: [action.response.data.createTrackingNumber.id, action.response.data.createTrackingNumber._version],
+                createTrackingSucceededResponse: action.response.data.createTrackingNumber.id,
             };
             return newState;
         case CREATE_TRACKING_FAILED:

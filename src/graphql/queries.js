@@ -7,7 +7,6 @@ const getTrackingNumbersByUser = `
                 trackingNumber
                 trackingSummary
                 userNotes
-                _version
                 _deleted
             }
         }

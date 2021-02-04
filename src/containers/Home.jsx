@@ -104,7 +104,6 @@ const Home = () => {
             trackingSummary: item.trackingSummary[0],
             history: item.trackingSummary.slice(1),
             userNotes: item.userNotes,
-            _version: item._version,
           }
           if(!item._deleted){
             trackingReduxToState.push(addedTracking);
@@ -160,7 +159,7 @@ const Home = () => {
       if(createTrackingSucceededResponse){
         //when implementing sorting, trackingNumberList[0] should be changed if the item is to be placed in correct sort order
         let trackingNumberListCopy = [...trackingNumberList];
-        let trackingNumberCopy = {...trackingNumberList[0], id: createTrackingSucceededResponse[0], _version: createTrackingSucceededResponse[1]};
+        let trackingNumberCopy = {...trackingNumberList[0], id: createTrackingSucceededResponse,};
         trackingNumberListCopy[0] = trackingNumberCopy
         setTrackingNumberList(trackingNumberListCopy);
       }
@@ -204,8 +203,8 @@ const Home = () => {
       }
     };
 
-    const handleDelete = (id, _version, index) => {
-      dispatch(deleteTracking(id, _version))
+    const handleDelete = (id, index) => {
+      dispatch(deleteTracking(id))
       let trackingNumberListCopy = [...trackingNumberList];
       pullAt(trackingNumberListCopy, [index]);
       setTrackingNumberList(trackingNumberListCopy);

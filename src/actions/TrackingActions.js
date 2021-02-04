@@ -107,10 +107,9 @@ const onGetTrackingStarted = () => ({
         });
     };
     
-    export const deleteTracking = (id, _version) => (dispatch) => {
+    export const deleteTracking = (id) => (dispatch) => {
       const variables = {
         "id": id,
-        "_version": _version,
       };
   
       dispatch(onDeleteTrackingStarted());

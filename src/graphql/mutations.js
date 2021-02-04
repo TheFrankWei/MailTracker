@@ -7,14 +7,13 @@ const createTrackingNumber = `
                                         trackingSummary: $trackingSummary,
                                     }){
                                         id
-                                        _version
                                     }
     }
   `
 
 const deleteTrackingNumber = `
-    mutation deleteTrackingNumber($id: ID!, $_version: Int! ) {
-        deleteTrackingNumber(input: {id: $id, _version: $_version}) {
+    mutation deleteTrackingNumber($id: ID! ) {
+        deleteTrackingNumber(input: {id: $id}) {
       id
     }
   }
