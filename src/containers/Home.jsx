@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useRef} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { isEqual } from 'lodash';
+import { isEqual, pullAt } from 'lodash';
 
 import {makeStyles, 
         TextField,
@@ -25,7 +25,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import Snackbar from '../components/Snackbar';
 
 //actions
-import { createTracking, getTracking, } from '../actions/TrackingActions';
+import { deleteTracking, createTracking, getTracking, } from '../actions/TrackingActions';
 import { getUpsTracking } from '../actions/UpsActions';
 import { getUspsTracking } from '../actions/UspsActions';
 import { showInfoSnackbar, showErrorSnackbar } from '../actions/SnackbarActions';
@@ -70,10 +70,10 @@ const Home = () => {
     const dispatch = useDispatch();
 
     const trackingNumbers = useSelector(state=> state.trackingReducers.trackingNumbers);
-    const uspsTracking = useSelector(state => state.uspsReducers.uspsTracking);
+    const createTrackingSucceededResponse = useSelector(state=> state.trackingReducers. createTrackingSucceededResponse);
+
     const uspsLastAdded = useSelector(state => state.uspsReducers.uspsLastAdded);
 
-    const upsTracking = useSelector(state => state.upsReducers.upsTracking);
     const upsLastAdded = useSelector(state => state.upsReducers.upsLastAdded);
 
     const [textInput, setTextInput] = useState('');
@@ -104,10 +104,11 @@ const Home = () => {
             trackingSummary: item.trackingSummary[0],
             history: item.trackingSummary.slice(1),
             userNotes: item.userNotes,
-            _version: item._version
+            _version: item._version,
           }
-          trackingReduxToState.push(addedTracking);
-
+          if(!item._deleted){
+            trackingReduxToState.push(addedTracking);
+          }
         });
         if(trackingReduxToState.length > 0){
           setTrackingNumberList(trackingReduxToState);
@@ -141,17 +142,30 @@ const Home = () => {
           default:
             break;
         }
+        setTextInput('');
         if(lastAddedTrackingNumber){
           let userId = window.localStorage.getItem(process.env.REACT_APP_AWS_USER_ID_STORAGE_KEY);
           dispatch(createTracking(userId, 
                                   lastAddedTrackingNumber.carrier, 
                                   lastAddedTrackingNumber.trackingNumber, 
-                                  [lastAddedTrackingNumber.trackingSummary, ...lastAddedTrackingNumber.history]));
+                                  [lastAddedTrackingNumber.trackingSummary, ...lastAddedTrackingNumber.history]))
+         
           setTrackingNumberList([lastAddedTrackingNumber, ...trackingNumberList]);
         }
       }
     }, [upsLastAdded, uspsLastAdded]); 
 
+    useEffect(()=>{
+      // didMount pull saved tracking numbers from future backend
+      if(createTrackingSucceededResponse){
+        //when implementing sorting, trackingNumberList[0] should be changed if the item is to be placed in correct sort order
+        let trackingNumberListCopy = [...trackingNumberList];
+        let trackingNumberCopy = {...trackingNumberList[0], id: createTrackingSucceededResponse[0], _version: createTrackingSucceededResponse[1]};
+        trackingNumberListCopy[0] = trackingNumberCopy
+        setTrackingNumberList(trackingNumberListCopy);
+      }
+    }, [createTrackingSucceededResponse]);
+    
     const findTracking = () => {
       if(textInput === ''){
         dispatch(showErrorSnackbar('No tracking number entered.'));
@@ -159,7 +173,7 @@ const Home = () => {
         dispatch(showErrorSnackbar("You've already entered this number! Please enter a new tracking number."));
       } else {
         // UPS examples
-        //1Z5338FF0107231059 -not found
+        //1Z5338FF0107231059 -not found -- need way to display error if tracking not found
         //1Z75AR481395060710 -works
 
         // USPS examples
@@ -173,24 +187,32 @@ const Home = () => {
         if(ups_regex_pattern.some(match)){
           setLastAddedCarrier('UPS');
           dispatch(getUpsTracking(textInput));
-          dispatch(showInfoSnackbar('Tracking Added!'));
+          dispatch(showInfoSnackbar('Tracking added!'));
         }
 
         else if(usps_regex_pattern.some(match)){
             setLastAddedCarrier('USPS');
             dispatch(getUspsTracking(textInput));
-            dispatch(showInfoSnackbar('Tracking Added!'));
+            dispatch(showInfoSnackbar('Tracking added!'));
         }
 
         else{
-          dispatch(showErrorSnackbar('Tracking Not Found'));
+          dispatch(showErrorSnackbar('This tracking number pattern does not match any of the provided carriers.'));
         }
 
+        
       }
     };
 
+    const handleDelete = (id, _version, index) => {
+      dispatch(deleteTracking(id, _version))
+      let trackingNumberListCopy = [...trackingNumberList];
+      pullAt(trackingNumberListCopy, [index]);
+      setTrackingNumberList(trackingNumberListCopy);
+    }
+
     const Row = (props) => {
-      const { row } = props;
+      const { row, index } = props;
       const [open, setOpen] = useState(false);
 
       return(
@@ -207,7 +229,7 @@ const Home = () => {
             <TableCell>{row.userNotes}</TableCell>
             <TableCell>
               <Tooltip title="Delete Tracking Number" arrow>
-                <IconButton alt="Delete Tracking Number">
+                <IconButton alt="Delete Tracking Number" onClick={(e)=>handleDelete(row.id, row._version, index, e)}>
                   <CloseIcon/>
                 </IconButton>
               </Tooltip>
@@ -282,9 +304,9 @@ const Home = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-                {trackingNumberList.map((row) => (
-                  <Row key={row.trackingNumber} row={row}/>
-                ))}
+                {trackingNumberList.length>0? trackingNumberList.map((row, index) => (
+                  <Row key={row.trackingNumber} row={row} index={index}/>
+                )) : null}
             </TableBody>
           </Table>
         </TableContainer>

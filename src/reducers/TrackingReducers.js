@@ -15,11 +15,32 @@ import {
 
   const defaultState = {
     trackingNumbers: [],
+    createTrackingSucceededResponse: '',
   };
   
   const TrackingReducer = (state = defaultState, action) => {
     let newState;
     switch (action.type) {
+        case CREATE_TRACKING_STARTED:
+            newState = {
+                ...state,
+                isLoading: true,
+            };
+            return newState;
+        case CREATE_TRACKING_SUCCEEDED:
+            newState = {
+                ...state,
+                isLoading: false,
+                createTrackingSucceededResponse: [action.response.data.createTrackingNumber.id, action.response.data.createTrackingNumber._version],
+            };
+            return newState;
+        case CREATE_TRACKING_FAILED:
+            newState = {
+                ...state,
+                isLoading: false,
+                error: action.message,
+            };
+            return newState;
         case GET_TRACKING_STARTED:
             newState = {
                 ...state,
@@ -34,6 +55,26 @@ import {
             };
             return newState;
         case GET_TRACKING_FAILED:
+            newState = {
+                ...state,
+                isLoading: false,
+                error: action.message,
+            };
+            return newState;
+        
+        case DELETE_TRACKING_STARTED:
+            newState = {
+                ...state,
+                isLoading: true,
+            };
+            return newState;
+        case DELETE_TRACKING_SUCCEEDED:
+            newState = {
+                ...state,
+                isLoading: false,
+            };
+            return newState;
+        case DELETE_TRACKING_FAILED:
             newState = {
                 ...state,
                 isLoading: false,

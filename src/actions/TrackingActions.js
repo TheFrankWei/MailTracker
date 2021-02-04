@@ -50,6 +50,20 @@ const onGetTrackingStarted = () => ({
     error,
   });
 
+  const onDeleteTrackingStarted = () => ({
+    type: DELETE_TRACKING_STARTED,
+  });
+  
+  const onDeleteTrackingSucceeded = response => ({
+    type: DELETE_TRACKING_SUCCEEDED,
+    response,
+  });
+  
+  const onDeleteTrackingFailed = error => ({
+    type: DELETE_TRACKING_FAILED,
+    error,
+  });
+
   
   export const createTracking = (userID, carrier, trackingNumber, trackingSummary,) => (dispatch) => {
     const variables = {
@@ -89,6 +103,26 @@ const onGetTrackingStarted = () => ({
         .catch((error) => {
           const { response } = error;
           dispatch(onGetTrackingFailed(response));
+          throw error;
+        });
+    };
+    
+    export const deleteTracking = (id, _version) => (dispatch) => {
+      const variables = {
+        "id": id,
+        "_version": _version,
+      };
+  
+      dispatch(onDeleteTrackingStarted());
+      //no use of axiosInstance?
+      return API.graphql(graphqlOperation(mutations.deleteTrackingNumber, variables))
+        .then((response) => {
+          dispatch(onDeleteTrackingSucceeded(response));
+          return response;
+        })
+        .catch((error) => {
+          const { response } = error;
+          dispatch(onDeleteTrackingFailed(response));
           throw error;
         });
     };

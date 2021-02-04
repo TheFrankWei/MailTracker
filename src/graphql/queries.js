@@ -8,6 +8,7 @@ const getTrackingNumbersByUser = `
                 trackingSummary
                 userNotes
                 _version
+                _deleted
             }
         }
     }
