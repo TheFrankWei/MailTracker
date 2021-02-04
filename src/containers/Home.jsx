@@ -105,9 +105,8 @@ const Home = () => {
             history: item.trackingSummary.slice(1),
             userNotes: item.userNotes,
           }
-          if(!item._deleted){
-            trackingReduxToState.push(addedTracking);
-          }
+          trackingReduxToState.push(addedTracking);
+          
         });
         if(trackingReduxToState.length > 0){
           setTrackingNumberList(trackingReduxToState);
