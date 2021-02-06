@@ -1,16 +1,12 @@
-import React, {useState, useEffect, useRef} from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { isEqual, pullAt } from 'lodash';
+import React, {useState, useEffect} from 'react';
+import { useDispatch } from 'react-redux';
 
 import {makeStyles, 
     TextField,
     IconButton, 
-    Button,
     Box,
     Typography, 
     Table, 
-    TableContainer, 
-    TableHead, 
     TableRow, 
     TableCell, 
     TableBody, 
@@ -28,47 +24,50 @@ import SaveIcon from '@material-ui/icons/Save';
 import Snackbar from '../components/Snackbar';
 
 //actions
-import { deleteTracking, createTracking, getTracking, updateTracking } from '../actions/TrackingActions';
-import { getUpsTracking } from '../actions/UpsActions';
-import { getUspsTracking } from '../actions/UspsActions';
+import { updateTracking } from '../actions/TrackingActions';
 import { showInfoSnackbar, showErrorSnackbar } from '../actions/SnackbarActions';
 
 
 export const useStyles = makeStyles(theme => ({
-
+  table_row: {
+  
+  }
   }));
 
   const Row = (props) => {
     const { row, index, handleDelete, } = props;
+    const classes = useStyles();
     const [open, setOpen] = useState(false);
     const [editEnabled, setEdit] = useState(false);
-    const [userNotesInput, setUserNotesInput] = useState(row.userNotes);
-    
+    const [userNotesInput, setUserNotesInput] = useState(row.userNotes || '');
+ 
     const dispatch = useDispatch();
 
-    const handleEdit = (id, userNotes, index) => {
-      dispatch(updateTracking(id, userNotes))
+
+    const handleEdit = (id, trackingSummary, history, userNotes, index) => {
+      dispatch(updateTracking(id, [row.trackingSummary,...row.history],  userNotes))
     }
+    
 
     return(
       <React.Fragment>
-        <TableRow>
+        <TableRow key={row.id} className={classes.table_row}>
           <TableCell>
             <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
               {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
             </IconButton>
           </TableCell>
-          <TableCell>{row.carrier}</TableCell>
-          <TableCell>{row.trackingNumber}</TableCell>
-          <TableCell>{row.trackingSummary}</TableCell>
+          <TableCell id={`${row.trackingNumber}_carrier`}>{row.carrier}</TableCell>
+          <TableCell id={`${row.trackingNumber}_number`}>{row.trackingNumber}</TableCell>
+          <TableCell id={`${row.trackingNumber}_summary`}>{row.trackingSummary}</TableCell>
           <TableCell>
-            <TextField disabled={!editEnabled} id="outlined-basic" value={userNotesInput}  onChange={e => setUserNotesInput(e.target.value)} variant="outlined"/>        
+            <TextField disabled={!editEnabled} id={`usernotes_input_${row.trackingNumber}`} value={userNotesInput}  onChange={e => setUserNotesInput(e.target.value)} variant="outlined"/>        
           </TableCell>
           <TableCell>
             {editEnabled ? (
                <Tooltip title="Save Notes" arrow>
                 <IconButton onClick={(e)=>{
-                                            handleEdit(row.id, userNotesInput, index); 
+                                            handleEdit(row.id, row.trackingSummary, row.trackingHistory, userNotesInput, index); 
                                             setEdit(false)
                                           }}>
                   <SaveIcon/>
@@ -102,9 +101,9 @@ export const useStyles = makeStyles(theme => ({
               {row.history.length > 0? 
                 ( 
                   <TableBody>
-                    {row.history.map((historyRow) => (
+                    {row.history.map((item, index) => (
                       <TableRow >
-                        <TableCell>{historyRow}</TableCell>
+                        <TableCell key={row.trackingNumber+'_'+index}>{item}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
