@@ -35,7 +35,16 @@ export const useStyles = makeStyles(theme => ({
   }));
 
   const Row = (props) => {
-    const { row, index, handleDelete, } = props;
+    const {
+      row= {
+        id: '',
+        carrier:'',
+        trackingSummary:["N/A"],
+        trackingNumber: "N/A",
+        userNotes:"N/A",
+        }, 
+      index, 
+      handleDelete, } = props;
     const classes = useStyles();
     const [open, setOpen] = useState(false);
     const [editEnabled, setEdit] = useState(false);
@@ -44,8 +53,8 @@ export const useStyles = makeStyles(theme => ({
     const dispatch = useDispatch();
 
 
-    const handleEdit = (id, trackingSummary, history, userNotes, index) => {
-      dispatch(updateTracking(id, [row.trackingSummary,...row.history],  userNotes))
+    const handleEdit = (id, trackingSummary, userNotes, index) => {
+      dispatch(updateTracking(id, trackingSummary,  userNotes))
     }
     
 
@@ -59,7 +68,7 @@ export const useStyles = makeStyles(theme => ({
           </TableCell>
           <TableCell id={`${row.trackingNumber}_carrier`}>{row.carrier}</TableCell>
           <TableCell id={`${row.trackingNumber}_number`}>{row.trackingNumber}</TableCell>
-          <TableCell id={`${row.trackingNumber}_summary`}>{row.trackingSummary}</TableCell>
+          <TableCell id={`${row.trackingNumber}_summary`}>{row.trackingSummary && row.trackingSummary[0]}</TableCell>
           <TableCell>
             <TextField disabled={!editEnabled} id={`usernotes_input_${row.trackingNumber}`} value={userNotesInput}  onChange={e => setUserNotesInput(e.target.value)} variant="outlined"/>        
           </TableCell>
@@ -67,7 +76,7 @@ export const useStyles = makeStyles(theme => ({
             {editEnabled ? (
                <Tooltip title="Save Notes" arrow>
                 <IconButton onClick={(e)=>{
-                                            handleEdit(row.id, row.trackingSummary, row.trackingHistory, userNotesInput, index); 
+                                            handleEdit(row.id, row.trackingSummary, userNotesInput, index); 
                                             setEdit(false)
                                           }}>
                   <SaveIcon/>
@@ -94,24 +103,24 @@ export const useStyles = makeStyles(theme => ({
         <Collapse in={open} timeout="auto" unmountOnExit>
           <Box margin={1}>
             <Typography variant="h6" gutterBottom component="div">
-              History
+              Detailed History
             </Typography>
 
             <Table size="small" aria-label="tracking details">
-              {row.history.length > 0? 
+              {!row.trackingSummary? 
                 ( 
+                   <TableBody>
+                   <TableRow>
+                     <TableCell> History is unavailable for this shipment. </TableCell>
+                   </TableRow>
+                 </TableBody>
+                ) : (
                   <TableBody>
-                    {row.history.map((item, index) => (
+                    {row.trackingSummary.map((item, index) => (
                       <TableRow >
                         <TableCell key={row.trackingNumber+'_'+index}>{item}</TableCell>
                       </TableRow>
                     ))}
-                  </TableBody>
-                ) : (
-                  <TableBody>
-                    <TableRow>
-                      <TableCell> History is unavailable for this shipment. </TableCell>
-                    </TableRow>
                   </TableBody>
                 )}
             </Table>

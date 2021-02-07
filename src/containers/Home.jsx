@@ -12,25 +12,14 @@ if usps one ups other, only shows one
 */
 import {makeStyles, 
         TextField,
-        IconButton, 
         Button,
-        Box,
-        Typography, 
         Table, 
         TableContainer, 
         TableHead, 
         TableRow, 
         TableCell, 
         TableBody, 
-        Collapse,
-        Tooltip,
         Paper, } from '@material-ui/core';
-
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
-import CloseIcon from '@material-ui/icons/Close';
-import EditIcon from '@material-ui/icons/Edit';
-import SaveIcon from '@material-ui/icons/Save';
 
 import Row from '../components/Row';
 import Snackbar from '../components/Snackbar';
@@ -97,11 +86,8 @@ const Home = () => {
                                                   trackingNumber:'',
                                                 });
 
-    
-    const prevAdded = usePrevious(lastAdded);
-    
-    const [testState, setTest] = useState();
-    const [testState1, setTest1] = useState(prevAdded);
+    const [testState1, setTest1] = useState('yo');
+
     let userId = window.localStorage.getItem(process.env.REACT_APP_AWS_USER_ID_STORAGE_KEY);
 
     //useEffects to pull data from graphQL backend
@@ -119,8 +105,7 @@ const Home = () => {
             id: item.id,
             carrier: item.carrier,
             trackingNumber: item.trackingNumber,
-            trackingSummary: item.trackingSummary[0],
-            history: item.trackingSummary.slice(1),
+            trackingSummary: item.trackingSummary,
             userNotes: item.userNotes,
           }  
           setLastAdded({ carrier : addedTracking.carrier, trackingNumber : addedTracking.trackingNumber});
@@ -136,38 +121,31 @@ const Home = () => {
               break;
           }
         }
-        setTrackingNumberList(reduxToState);
+        setTrackingNumberList(reduxToState.reverse());
 
       }
     }, [trackingNumberStore]);
 
     //useEffect when a response is recieved from USPS/UPS APIs
     useEffect(()=>{
-
-      if((upsLastAdded.carrier  || uspsLastAdded.carrier) && lastAdded ){
+      if(upsLastAdded.carrier  || uspsLastAdded.carrier ){
         //link both of these into one reducer?
         let lastAddedTrackingNumber;
-        let trackingSummary;
-        let history;
         switch(lastAdded.carrier){ 
           case 'UPS':
-            trackingSummary = upsLastAdded.trackingSummary && upsLastAdded.trackingSummary[0];
-            history = upsLastAdded.trackingSummary && upsLastAdded.trackingSummary.slice(1)
             lastAddedTrackingNumber={
                                       carrier:upsLastAdded.carrier,
                                       trackingNumber:upsLastAdded.trackingNumber || lastAdded.trackingNumber,
-                                      trackingSummary: trackingSummary,
-                                      history: history,
+                                      trackingSummary: upsLastAdded.trackingSummary,
+                                      
                                     }                       
             break;
           case 'USPS':
-            trackingSummary = uspsLastAdded.trackingSummary && uspsLastAdded.trackingSummary[0];
-            history = uspsLastAdded.trackingSummary && uspsLastAdded.trackingSummary.slice(1)
             lastAddedTrackingNumber={
                                       carrier:uspsLastAdded.carrier,
                                       trackingNumber:uspsLastAdded.trackingNumber || lastAdded.trackingNumber,
-                                      trackingSummary: trackingSummary,
-                                      history: history,
+                                      trackingSummary: uspsLastAdded.trackingSummary,
+                      
                                     }                                
             break;
           default:
@@ -177,34 +155,34 @@ const Home = () => {
         
         if(lastAddedTrackingNumber){
           
-          let indexInLocalState = trackingNumberList.findIndex(item => item.trackingNumber === lastAddedTrackingNumber.trackingNumber)
+          let indexInLocalState = trackingNumberList.findIndex(item => item.trackingNumber === lastAddedTrackingNumber.trackingNumber);
        
           if(indexInLocalState <= -1 ){
             setTest1('creates')
             dispatch(createTracking(userId, 
             lastAddedTrackingNumber.carrier, 
             lastAddedTrackingNumber.trackingNumber, 
-            [lastAddedTrackingNumber.trackingSummary, ...lastAddedTrackingNumber.history]))
+            lastAddedTrackingNumber.trackingSummary,))
 
             setTrackingNumberList([...trackingNumberList, lastAddedTrackingNumber]);
           }
           else {
-            if(trackingNumberList[indexInLocalState].history.length >= 0 && (trackingNumberList[indexInLocalState].history.length !== lastAddedTrackingNumber.history.length)){
-              dispatch(updateTracking(trackingNumberList[indexInLocalState].id, [lastAddedTrackingNumber.trackingSummary, ...lastAddedTrackingNumber.history], lastAddedTrackingNumber.userNotes));
-              setTest1(trackingNumberList[indexInLocalState].history.length + '___' + trackingNumberList[indexInLocalState].trackingNumber +'updated, dispatched for ' + lastAddedTrackingNumber.trackingNumber + '___' + lastAddedTrackingNumber.history.length)
-               //error maybe because of backwards index in state??
-              //  setTest1(trackingNumberList[indexInLocalState].history.length + 'updated, dispatched for ' + lastAddedTrackingNumber.history.length)
+            if(trackingNumberList[indexInLocalState]){
+              //updates but not for entire array, only last one??
+              let index = trackingNumberList.findIndex(item => item.trackingNumber === lastAddedTrackingNumber.trackingNumber)
+              dispatch(updateTracking(trackingNumberList[index].id, lastAddedTrackingNumber.trackingSummary, lastAddedTrackingNumber.userNotes));
               let trackingNumberListCopy = [...trackingNumberList];
               let trackingNumberCopy = {...trackingNumberList[indexInLocalState], 
               trackingSummary: lastAddedTrackingNumber.trackingSummary,
-              history: lastAddedTrackingNumber.history
               };
               trackingNumberListCopy[indexInLocalState] = trackingNumberCopy;
-              setTrackingNumberList(trackingNumberListCopy);
+              setTest1(trackingNumberCopy)
+              return setTrackingNumberList(trackingNumberListCopy);
+              
             }
-            setTest1("updated, no dispatch")
+            
           }
-          lastAddedTrackingNumber = {};
+
           setLastAdded({ carrier : '', trackingNumber: ''});
         }
       }
@@ -302,7 +280,7 @@ const Home = () => {
             </TableHead>
             <TableBody>
                 {trackingNumberList.length > 0? 
-                trackingNumberList.map((row, index) => (<Row row={row} index={index} handleDelete={(e)=>handleDelete(row.id, index, e)}/>)) 
+                trackingNumberList.map((row, index) => (<Row key={row.trackingNumber} row={row} index={index} handleDelete={(e)=>handleDelete(row.id, index, e)}/>)) 
                 : <TableRow/>}
             </TableBody>
           </Table>
