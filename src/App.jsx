@@ -12,10 +12,10 @@ const App = () => (
         <BrowserRouter>
           <ThemeProvider theme={theme}>
             <Router />
-            <AmplifySignOut />
           </ThemeProvider>
         </BrowserRouter>
       </Provider>
 );
 
-export default withAuthenticator(App);
+// export default withAuthenticator(App);
+export default (App);

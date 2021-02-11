@@ -1,6 +1,7 @@
 import React, {useState, useEffect, useRef} from 'react';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { isEqual, pullAt, update } from 'lodash';
+import { withAuthenticator, AmplifySignOut } from '@aws-amplify/ui-react'
 
 
 /*
@@ -49,7 +50,27 @@ export const useStyles = makeStyles(theme => ({
   home_container: {
     margin: 'auto',
     textAlign: 'center',
-  }
+  },
+  title:{
+    diplay: 'inline-block',
+  },
+  signOut:{
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    width: '10%',
+    diplay: 'inline-block',
+  },
+  inputField:{
+    diplay: 'inline-block',
+  },
+  submitButton:{
+    diplay: 'inline-block',
+  },
+  tableContainer:{
+    marginLeft: 'auto',
+    marginRight: 'auto',
+  },
 }));
 
 const usePrevious = (value) => {
@@ -110,18 +131,20 @@ const Home = () => {
           }  
           setLastAdded({ carrier : addedTracking.carrier, trackingNumber : addedTracking.trackingNumber});
           reduxToState.push(addedTracking);
+
           switch(addedTracking.carrier){
             case 'UPS':
-              dispatch(getUpsTracking(addedTracking.trackingNumber));
+               dispatch(getUpsTracking(addedTracking.trackingNumber));
               break;
+              //propery length error for usps only wtf
             case 'USPS':
-              dispatch(getUspsTracking(addedTracking.trackingNumber));
+               dispatch(getUspsTracking(addedTracking.trackingNumber));
               break;
             default:
               break;
           }
         }
-        setTrackingNumberList(reduxToState.reverse());
+        setTrackingNumberList(reduxToState);
 
       }
     }, [trackingNumberStore]);
@@ -153,37 +176,32 @@ const Home = () => {
         }
         setTextInput('');
         
-        if(lastAddedTrackingNumber){
-          
+
+        if(lastAddedTrackingNumber){  
           let indexInLocalState = trackingNumberList.findIndex(item => item.trackingNumber === lastAddedTrackingNumber.trackingNumber);
-       
           if(indexInLocalState <= -1 ){
             setTest1('creates')
             dispatch(createTracking(userId, 
             lastAddedTrackingNumber.carrier, 
             lastAddedTrackingNumber.trackingNumber, 
             lastAddedTrackingNumber.trackingSummary,))
-
-            setTrackingNumberList([...trackingNumberList, lastAddedTrackingNumber]);
+            setLastAdded({ carrier : '', trackingNumber: ''});
+            return setTrackingNumberList([lastAddedTrackingNumber, ...trackingNumberList,]);
           }
           else {
-            if(trackingNumberList[indexInLocalState]){
-              //updates but not for entire array, only last one??
-              let index = trackingNumberList.findIndex(item => item.trackingNumber === lastAddedTrackingNumber.trackingNumber)
+            //updates but not for entire array, only last one??
+            let index = trackingNumberList.findIndex(item => item.trackingNumber === lastAddedTrackingNumber.trackingNumber)
+            if(trackingNumberList[index].trackingSummary.length !== lastAddedTrackingNumber.trackingSummary.length){
               dispatch(updateTracking(trackingNumberList[index].id, lastAddedTrackingNumber.trackingSummary, lastAddedTrackingNumber.userNotes));
               let trackingNumberListCopy = [...trackingNumberList];
               let trackingNumberCopy = {...trackingNumberList[indexInLocalState], 
-              trackingSummary: lastAddedTrackingNumber.trackingSummary,
-              };
+                trackingSummary: lastAddedTrackingNumber.trackingSummary,
+                };
               trackingNumberListCopy[indexInLocalState] = trackingNumberCopy;
-              setTest1(trackingNumberCopy)
               return setTrackingNumberList(trackingNumberListCopy);
-              
             }
-            
+            setTest1('no update')
           }
-
-          setLastAdded({ carrier : '', trackingNumber: ''});
         }
       }
     }, [upsLastAdded, uspsLastAdded]); 
@@ -247,9 +265,12 @@ const Home = () => {
 
     return (
     <div className={classes.home_container}>   
-      <div>
+      <div className={classes.title}>
         <h1>MailTracker</h1> 
       </div> 
+      <div className={classes.signOut}>
+        <AmplifySignOut />
+      </div>
       <div>
         <form>
           <TextField 
@@ -258,15 +279,16 @@ const Home = () => {
             placeholder='Input tracking number here!' 
             value={textInput}
             onChange={e => setTextInput(e.target.value)}
+            className={classes.inputField}
           />
           <br/>
-          <Button variant="contained" color="primary" onClick={findTracking}>
+          <Button className={classes.submitButton} variant="contained" color="primary" onClick={findTracking}>
             Track Package!
           </Button>
         </form>
       </div>
       <div>
-        <TableContainer component={Paper}>
+        <TableContainer className={classes.tableContainer} component={Paper}>
           <Table>
             <TableHead>
               <TableRow>
