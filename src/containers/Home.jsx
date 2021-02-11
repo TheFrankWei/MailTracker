@@ -266,7 +266,7 @@ const Home = () => {
     return (
     <div className={classes.home_container}>   
       <div className={classes.title}>
-        <h1>MailTracker</h1> 
+        <h1>Deliveries.dev</h1> 
       </div> 
       <div className={classes.signOut}>
         <AmplifySignOut />

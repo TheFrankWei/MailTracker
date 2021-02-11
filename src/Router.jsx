@@ -17,9 +17,9 @@ const Router = () => (
          placeholder: "Password"
        },
      ]} />
-    <Switch>
-        <Route path='/' exact component = {Home} />  
-    </Switch>
+        <Switch>
+            <Route path='/' exact component={Home} />  
+        </Switch>
     </AmplifyAuthenticator>
 );
 
