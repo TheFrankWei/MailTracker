@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useRef} from 'react';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
-import { isEqual, pullAt, update } from 'lodash';
-import { withAuthenticator, AmplifySignOut } from '@aws-amplify/ui-react'
+import { pullAt, } from 'lodash';
+import { AmplifySignOut } from '@aws-amplify/ui-react'
 
 
 /*
@@ -11,7 +11,8 @@ if both usps, it duplicate sends,
 if usps one ups other, only shows one
 
 */
-import {makeStyles, 
+import {makeStyles,
+        Grid, 
         TextField,
         Button,
         Table, 
@@ -24,6 +25,7 @@ import {makeStyles,
 
 import Row from '../components/Row';
 import Snackbar from '../components/Snackbar';
+import InputButton from '../components/InputButton';
 
 //actions
 import { deleteTracking, createTracking, getTracking, updateTracking } from '../actions/TrackingActions';
@@ -47,18 +49,17 @@ let usps_regex_pattern=[
 ];
 
 export const useStyles = makeStyles(theme => ({
-  home_container: {
+  homeContainer: {
     margin: 'auto',
     textAlign: 'center',
   },
   title:{
-    diplay: 'inline-block',
+    // diplay: 'inline-block',
   },
   signOut:{
     position: 'absolute',
     top: 0,
     right: 0,
-    width: '10%',
     diplay: 'inline-block',
   },
   inputField:{
@@ -66,6 +67,10 @@ export const useStyles = makeStyles(theme => ({
   },
   submitButton:{
     diplay: 'inline-block',
+  },
+  searchInput:{
+    marginLeft: 'auto',
+    marginRight: 'auto',
   },
   tableContainer:{
     marginLeft: 'auto',
@@ -217,7 +222,9 @@ const Home = () => {
       }
     }, [createTrackingSucceededResponse]);
     
-    const findTracking = () => {
+    const findTracking = (e) => {
+      e.preventDefault();
+
       if(textInput === ''){
         dispatch(showErrorSnackbar('No tracking number entered.'));
       } else if(trackingNumberList.find(item => item.trackingNumber === textInput)){
@@ -264,16 +271,19 @@ const Home = () => {
     } 
 
     return (
-    <div className={classes.home_container}>   
+    <div className={classes.homeContainer} >
+      
       <div className={classes.title}>
         <h1>Deliveries.dev</h1> 
       </div> 
-      <div className={classes.signOut}>
+     
+      <div item xs className={classes.signOut}>
         <AmplifySignOut />
       </div>
-      <div>
-        <form>
-          <TextField 
+      <Grid container direction="column" spacing={4}>
+      <Grid item className={classes.searchInput} >
+          <InputButton onInputChange={e => setTextInput(e.target.value)} onIconClick={e => findTracking(e)}/>
+          {/* <TextField 
             variant="outlined" 
             label='Tracking Number' 
             placeholder='Input tracking number here!' 
@@ -284,10 +294,9 @@ const Home = () => {
           <br/>
           <Button className={classes.submitButton} variant="contained" color="primary" onClick={findTracking}>
             Track Package!
-          </Button>
-        </form>
-      </div>
-      <div>
+          </Button> */}
+      </Grid>
+      <Grid item xs={12}>
         <TableContainer className={classes.tableContainer} component={Paper}>
           <Table>
             <TableHead>
@@ -307,7 +316,9 @@ const Home = () => {
             </TableBody>
           </Table>
         </TableContainer>
-      </div>
+      </Grid>
+      
+      </Grid>   
       <Snackbar/>
     </div>
     );

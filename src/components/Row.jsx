@@ -12,7 +12,7 @@ import {makeStyles,
     TableBody, 
     Collapse,
     Tooltip,
-    Paper, } from '@material-ui/core';
+    Grid, } from '@material-ui/core';
 
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
