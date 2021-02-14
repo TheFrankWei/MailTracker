@@ -52,9 +52,12 @@ export const useStyles = makeStyles(theme => ({
   homeContainer: {
     margin: 'auto',
     textAlign: 'center',
+    height: '100vh',
+    backgroundColor: '#1E90FF',
   },
   title:{
     // diplay: 'inline-block',
+    color: 'white',
   },
   signOut:{
     position: 'absolute',
