@@ -52,7 +52,6 @@ export const useStyles = makeStyles(theme => ({
   homeContainer: {
     margin: 'auto',
     textAlign: 'center',
-    backgroundColor: '#1E90FF',
     height: '100vh',
   },
   title:{
