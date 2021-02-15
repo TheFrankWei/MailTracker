@@ -52,10 +52,11 @@ export const useStyles = makeStyles(theme => ({
   homeContainer: {
     margin: 'auto',
     textAlign: 'center',
-    height: '100vh',
     backgroundColor: '#1E90FF',
+    height: '100vh',
   },
   title:{
+    paddingTop: '2%',
     // diplay: 'inline-block',
     color: 'white',
   },
@@ -72,8 +73,12 @@ export const useStyles = makeStyles(theme => ({
     diplay: 'inline-block',
   },
   searchInput:{
+    marginBottom: '2%',
     marginLeft: 'auto',
     marginRight: 'auto',
+  },
+  gridContainer: {
+    padding: '2%',
   },
   tableContainer:{
     marginLeft: 'auto',
@@ -281,9 +286,9 @@ const Home = () => {
       </div> 
      
       <div item xs className={classes.signOut}>
-        <AmplifySignOut />
+        <AmplifySignOut  />
       </div>
-      <Grid container direction="column" spacing={4}>
+      <Grid container direction="column" className={classes.gridContainer}>
       <Grid item className={classes.searchInput} >
           <InputButton onInputChange={e => setTextInput(e.target.value)} onIconClick={e => findTracking(e)}/>
           {/* <TextField 

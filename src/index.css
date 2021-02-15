@@ -1,6 +1,6 @@
-canvas{
-  background-color: #1E90FF;
-  z-index: -100000 !important;
+*{
+  margin: 0;
+  padding: 0;
 }
 
 body {

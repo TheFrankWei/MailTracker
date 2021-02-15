@@ -29,8 +29,8 @@ import { showInfoSnackbar, showErrorSnackbar } from '../actions/SnackbarActions'
 
 
 export const useStyles = makeStyles(theme => ({
-  table_row: {
-  
+  tableRow: {
+
   }
   }));
 
@@ -60,7 +60,7 @@ export const useStyles = makeStyles(theme => ({
 
     return(
       <React.Fragment>
-        <TableRow key={row.id} className={classes.table_row}>
+        <TableRow key={row.id} className={classes.tableRow}>
           <TableCell>
             <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
               {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
