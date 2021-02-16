@@ -312,7 +312,7 @@ const Home = () => {
         <TableContainer className={classes.tableContainer} component={Paper}>
           <Table>
           {!trackingNumberList.length && 
-            <caption className={classes.tableCaption}>A basic table example with a caption</caption> 
+            <caption className={classes.tableCaption}>You have no tracking numbers saved! Please enter one in the field above.</caption> 
           }
             <TableHead>
               <TableRow>
