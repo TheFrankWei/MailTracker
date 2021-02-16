@@ -31,7 +31,22 @@ import { showInfoSnackbar, showErrorSnackbar } from '../actions/SnackbarActions'
 export const useStyles = makeStyles(theme => ({
   tableRow: {
 
-  }
+  },
+  carrier: {
+  },
+  trackingNumber: {
+  },
+  trackingSummary: {
+    // whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: 'ellipsis',
+  },
+  userNotes: {
+
+  },
+  actions: {
+
+  },
   }));
 
   const Row = (props) => {
@@ -61,14 +76,14 @@ export const useStyles = makeStyles(theme => ({
     return(
       <React.Fragment>
         <TableRow key={row.id} className={classes.tableRow}>
-          <TableCell>
+          <TableCell width='2%'>
             <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
               {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
             </IconButton>
           </TableCell>
           <TableCell id={`${row.trackingNumber}_carrier`}>{row.carrier}</TableCell>
           <TableCell id={`${row.trackingNumber}_number`}>{row.trackingNumber}</TableCell>
-          <TableCell id={`${row.trackingNumber}_summary`}>{row.trackingSummary && row.trackingSummary[0]}</TableCell>
+          <TableCell id={`${row.trackingNumber}_summary`} className={classes.trackingSummary}>{row.trackingSummary && row.trackingSummary[0]}</TableCell>
           <TableCell>
             <TextField disabled={!editEnabled} id={`usernotes_input_${row.trackingNumber}`} value={userNotesInput}  onChange={e => setUserNotesInput(e.target.value)} variant="outlined"/>        
           </TableCell>
@@ -106,7 +121,7 @@ export const useStyles = makeStyles(theme => ({
               Detailed History
             </Typography>
 
-            <Table size="small" aria-label="tracking details">
+            <Table aria-label="tracking details">
               {!row.trackingSummary? 
                 ( 
                    <TableBody>

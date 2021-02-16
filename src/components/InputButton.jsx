@@ -28,6 +28,7 @@ const InputButton = (props) => {
   const {
     onInputChange,
     onIconClick,
+    value,
   } = props;
   const classes = useStyles();
 
@@ -37,6 +38,7 @@ const InputButton = (props) => {
         className={classes.input}
         placeholder="Track Package!"
         onChange={onInputChange}
+        value={value}
       />
       <IconButton type="submit" className={classes.iconButton} aria-label="search" onClick={onIconClick}>
         <SearchIcon />

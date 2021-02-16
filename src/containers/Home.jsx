@@ -23,6 +23,7 @@ import {makeStyles,
         TableBody, 
         Paper, } from '@material-ui/core';
 
+import SignOut from '../components/SignOut';
 import Row from '../components/Row';
 import Snackbar from '../components/Snackbar';
 import InputButton from '../components/InputButton';
@@ -80,8 +81,12 @@ export const useStyles = makeStyles(theme => ({
     padding: '2%',
   },
   tableContainer:{
+    textAlign: 'center !important',
     marginLeft: 'auto',
     marginRight: 'auto',
+  },
+  tableCaption:{
+    textAlign: 'center !important',
   },
 }));
 
@@ -285,11 +290,11 @@ const Home = () => {
       </div> 
      
       <div item xs className={classes.signOut}>
-        <AmplifySignOut  />
+        <SignOut />
       </div>
       <Grid container direction="column" className={classes.gridContainer}>
       <Grid item className={classes.searchInput} >
-          <InputButton onInputChange={e => setTextInput(e.target.value)} onIconClick={e => findTracking(e)}/>
+          <InputButton value={textInput} onInputChange={e => setTextInput(e.target.value)} onIconClick={e => findTracking(e)}/>
           {/* <TextField 
             variant="outlined" 
             label='Tracking Number' 
@@ -306,6 +311,9 @@ const Home = () => {
       <Grid item xs={12}>
         <TableContainer className={classes.tableContainer} component={Paper}>
           <Table>
+          {!trackingNumberList.length && 
+            <caption className={classes.tableCaption}>A basic table example with a caption</caption> 
+          }
             <TableHead>
               <TableRow>
                 <TableCell/>
@@ -319,7 +327,8 @@ const Home = () => {
             <TableBody>
                 {trackingNumberList.length > 0? 
                 trackingNumberList.map((row, index) => (<Row key={row.trackingNumber} row={row} index={index} handleDelete={(e)=>handleDelete(row.id, index, e)}/>)) 
-                : <TableRow/>}
+                : <TableRow/>
+                }
             </TableBody>
           </Table>
         </TableContainer>
