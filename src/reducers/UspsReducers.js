@@ -43,7 +43,7 @@ import {parseString} from 'xml2js';
         newState = {
           ...state,
           isLoading: false,
-          uspsTracking: [...state.uspsTracking, currentTracking], //append new tracking to redux
+          uspsTracking: [...state.uspsTracking, currentTracking], 
           uspsLastAdded: currentTracking,
           jsonTesting: jsonFromXML,
         };

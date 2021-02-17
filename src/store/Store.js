@@ -7,8 +7,6 @@ import RootReducer from '../reducers/RootReducer';
 
 const middlewares = [thunk];
 
-// Check for if running in production or not, and loads redux dev tools
-// this will be changed if we use rails instead of node
 if (process.env.NODE_ENV !== 'production') {
   middlewares.push(freeze);
   middlewares.push(logger);

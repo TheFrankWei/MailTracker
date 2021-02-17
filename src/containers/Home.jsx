@@ -1,20 +1,9 @@
 import React, {useState, useEffect, useRef} from 'react';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { pullAt, } from 'lodash';
-import { AmplifySignOut } from '@aws-amplify/ui-react'
 
-
-/*
-current bugs=
-if both usps, it duplicate sends,
-
-if usps one ups other, only shows one
-
-*/
 import {makeStyles,
         Grid, 
-        TextField,
-        Button,
         Table, 
         TableContainer, 
         TableHead, 
@@ -57,7 +46,6 @@ export const useStyles = makeStyles(theme => ({
   },
   title:{
     paddingTop: '2%',
-    // diplay: 'inline-block',
     color: 'white',
   },
   signOut:{
@@ -153,7 +141,6 @@ const Home = () => {
             case 'UPS':
                dispatch(getUpsTracking(addedTracking.trackingNumber));
               break;
-              //propery length error for usps only wtf
             case 'USPS':
                dispatch(getUspsTracking(addedTracking.trackingNumber));
               break;
@@ -169,7 +156,6 @@ const Home = () => {
     //useEffect when a response is recieved from USPS/UPS APIs
     useEffect(()=>{
       if(upsLastAdded.carrier  || uspsLastAdded.carrier ){
-        //link both of these into one reducer?
         let lastAddedTrackingNumber;
         switch(lastAdded.carrier){ 
           case 'UPS':
@@ -177,7 +163,7 @@ const Home = () => {
                                       carrier:upsLastAdded.carrier,
                                       trackingNumber:upsLastAdded.trackingNumber || lastAdded.trackingNumber,
                                       trackingSummary: upsLastAdded.trackingSummary,
-                                      
+                                
                                     }                       
             break;
           case 'USPS':
@@ -295,18 +281,6 @@ const Home = () => {
       <Grid container direction="column" className={classes.gridContainer}>
       <Grid item className={classes.searchInput} >
           <InputButton value={textInput} onInputChange={e => setTextInput(e.target.value)} onIconClick={e => findTracking(e)}/>
-          {/* <TextField 
-            variant="outlined" 
-            label='Tracking Number' 
-            placeholder='Input tracking number here!' 
-            value={textInput}
-            onChange={e => setTextInput(e.target.value)}
-            className={classes.inputField}
-          />
-          <br/>
-          <Button className={classes.submitButton} variant="contained" color="primary" onClick={findTracking}>
-            Track Package!
-          </Button> */}
       </Grid>
       <Grid item xs={12}>
         <TableContainer className={classes.tableContainer} component={Paper}>

@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import { useDispatch } from 'react-redux';
 
 import {makeStyles, 
@@ -12,7 +12,7 @@ import {makeStyles,
     TableBody, 
     Collapse,
     Tooltip,
-    Grid, } from '@material-ui/core';
+    } from '@material-ui/core';
 
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
@@ -20,12 +20,9 @@ import CloseIcon from '@material-ui/icons/Close';
 import EditIcon from '@material-ui/icons/Edit';
 import SaveIcon from '@material-ui/icons/Save';
 
-
-import Snackbar from '../components/Snackbar';
-
 //actions
 import { updateTracking } from '../actions/TrackingActions';
-import { showInfoSnackbar, showErrorSnackbar } from '../actions/SnackbarActions';
+
 
 
 export const useStyles = makeStyles(theme => ({

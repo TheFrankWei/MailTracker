@@ -1,5 +1,3 @@
-import { isEmpty } from 'lodash';
-
 import {
     GET_UPS_TRACKING_STARTED,
     GET_UPS_TRACKING_SUCCEEDED,
@@ -26,16 +24,13 @@ import {
         let currentTracking = data.trackResponse.shipment[0].hasOwnProperty('warnings') ? 
           {
             carrier:'UPS',
-            trackingNumber: '', //should this have the error id?
+            trackingNumber: '', 
             trackingSummary: [data.trackResponse.shipment[0].warnings[0].message, ],
           } 
           :
           {
             carrier: 'UPS',
             trackingNumber: data.trackResponse.shipment[0].package[0].trackingNumber, 
-          // trackingSummary:  data.trackResponse.shipment[0].hasOwnProperty('package') ? `${data.trackResponse.shipment[0].package[0].activity[0].status.description + ' at ' +
-          //                   data.trackResponse.shipment[0].package[0].activity[0].location.address.city +  ', ' + 
-          //                   data.trackResponse.shipment[0].package[0].activity[0].location.address.stateProvince}` : 'not found',
             trackingSummary: data.trackResponse.shipment[0].package[0].activity.map(activity => {
                                                                                                   let status = activity.status.description;
                                                                                                   let date =`${activity.date? ' ' : ''}` + activity.date + 
